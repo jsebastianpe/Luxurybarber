@@ -1,0 +1,4 @@
+<a href="{% url url %}" class="flex h-10 items-center gap-3 rounded-lg px-3 {% if n == clave %}bg-carbon-800 text-laton-400{% else %}text-piedra-400 hover:bg-carbon-800 hover:text-marfil-50{% endif %}">
+  <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="{{ icono }}"/></svg>
+  {{ texto }}
+</a>

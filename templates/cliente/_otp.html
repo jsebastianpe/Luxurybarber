@@ -1,0 +1,10 @@
+{% if enviado %}
+<label for="codigo" class="mb-1 block text-sm text-piedra-400">Código de 6 dígitos que te enviamos por WhatsApp{% if telefono %} al {{ telefono }}{% endif %}</label>
+<input id="codigo" name="codigo" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required
+       class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-center text-xl tracking-[.5em] text-marfil-50 tabular focus:border-laton-500 focus:ring-laton-500 {% if error %}border-poste{% endif %}">
+{% if error %}<p class="mt-1 text-sm text-[#e38a83]">{{ error }}</p>{% endif %}
+{% if reg %}{% include "cliente/_otp_estado.html" %}{% endif %}
+{% if codigo_debug %}<p class="mt-1 text-xs text-ambar">Modo desarrollo: tu código es <span class="font-semibold tabular">{{ codigo_debug }}</span> (también aparece en la terminal).</p>{% endif %}
+{% elif error %}
+<p class="text-sm text-[#e38a83]" role="alert">{{ error }}</p>
+{% endif %}

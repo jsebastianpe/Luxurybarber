@@ -1,0 +1,46 @@
+{% extends "cliente/reservar_base.html" %}
+{% block volver %}<a href="{% url 'cliente:reservar_servicio' %}" class="text-piedra-400 hover:text-marfil-50">← Volver</a>{% endblock %}
+{% block paso %}
+<h1 class="font-display text-3xl">¿Con quién?</h1>
+<p class="mt-1 text-piedra-400">Toca una tarjeta para ver los horarios.</p>
+
+<div class="mt-6 space-y-3">
+  <a href="?barbero=any" class="flex items-center gap-4 rounded-card border-2 border-laton-500/60 bg-carbon-800 p-4 hover:border-laton-500">
+    <span class="flex h-16 w-16 flex-none items-center justify-center rounded-full bg-laton-500/15 text-laton-400">
+      <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20c.8-3.5 3.3-5.5 6.5-5.5s5.7 2 6.5 5.5M15 14.6c2.6-.3 5 1.2 6 4.4"/></svg>
+    </span>
+    <div class="flex-1">
+      <p class="font-semibold">Cualquier barbero disponible</p>
+      <p class="text-sm text-piedra-400">Te asignamos al que tenga el horario que elijas</p>
+    </div>
+    <span class="rounded-full bg-laton-500 px-2.5 py-1 text-[11px] font-semibold text-carbon-950">Más horarios</span>
+  </a>
+
+  {% for t in tarjetas %}
+  {% with b=t.b %}
+  <div x-data="{ abierto: false }" class="rounded-card border-2 border-carbon-600 bg-carbon-800 {% if not t.proximo %}opacity-60{% endif %}">
+    <div class="flex items-center gap-4 p-4">
+      <button type="button" @click="abierto = !abierto" class="flex-none" aria-label="Ver portafolio de {{ b.nombre }}">
+        {% include "componentes/_avatar.html" with b=b size="h-16 w-16 text-lg" %}
+      </button>
+      <a href="{% if t.proximo %}?barbero={{ b.id }}{% else %}#{% endif %}" class="flex-1 {% if not t.proximo %}pointer-events-none{% endif %}">
+        <p class="font-semibold">{{ b.nombre }} {% if t.habitual %}<span class="ml-1 rounded-full bg-cuero-600 px-2 py-0.5 text-[11px] font-medium">Tu barbero</span>{% endif %}</p>
+        <p class="text-sm text-piedra-400">★ {{ b.calificacion }} · {{ b.especialidades }}</p>
+        {% if t.proximo %}
+        <p class="mt-1 text-sm text-[#8fc4a0]">Próximo cupo: {{ t.proximo|fecha_larga }}, {{ t.proximo|hora }}</p>
+        {% else %}
+        <p class="mt-1 text-sm text-ambar">Sin cupos pronto</p>
+        {% endif %}
+      </a>
+      <span class="text-piedra-400">→</span>
+    </div>
+    <div x-show="abierto" x-transition x-cloak class="border-t border-carbon-600 px-4 py-3 text-sm text-piedra-400">
+      {{ b.bio|default:"Pronto verás aquí su portafolio de cortes." }}
+    </div>
+  </div>
+  {% endwith %}
+  {% empty %}
+  <p class="rounded-card border border-carbon-600 p-6 text-center text-piedra-400">Ningún barbero hace todos esos servicios juntos. <a href="{% url 'cliente:reservar_servicio' %}" class="text-laton-400 underline">Cambia la selección</a>.</p>
+  {% endfor %}
+</div>
+{% endblock %}

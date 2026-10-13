@@ -1,0 +1,50 @@
+{% extends "panel/base.html" %}
+{% block titulo %}Marketing{% endblock %}
+{% block encabezado %}Marketing y fidelización{% endblock %}
+{% block contenido %}
+<div class="grid gap-6 lg:grid-cols-[1fr_340px]">
+  <form method="post" x-data="{ todos: false }" class="rounded-card border border-marfil-100 bg-white">{% csrf_token %}
+    <div class="flex flex-wrap items-center gap-2 border-b border-marfil-100 px-5 py-4">
+      <h2 class="mr-auto font-semibold">Clientes inactivos</h2>
+      {% for o in opciones %}<a href="?dias={{ o }}" class="h-9 rounded-full px-3 text-sm leading-9 {% if dias == o %}bg-carbon-950 text-marfil-50{% else %}bg-marfil-50{% endif %}">+{{ o }} días</a>{% endfor %}
+    </div>
+    <p class="px-5 pt-3 text-sm text-piedra-500">Solo clientes que <strong>autorizaron publicidad</strong> ({{ autorizados }} en total), sin visita en más de {{ dias }} días y sin cita próxima: {{ inactivos|length }}.</p>
+    {% if not en_horario %}<p class="mx-5 mt-3 rounded-lg bg-ambar/10 px-3 py-2 text-sm text-[#8a6212]">Ahora no se puede enviar publicidad (Ley 2300 de 2023): lunes a viernes 7:00 a. m. – 7:00 p. m., sábados 8:00 a. m. – 3:00 p. m., nunca domingos ni festivos.</p>{% endif %}
+    <table class="mt-2 w-full text-sm">
+      <thead class="text-left text-xs uppercase tracking-wider text-piedra-500"><tr>
+        <th class="px-5 py-2"><input type="checkbox" x-model="todos" @change="$root.querySelectorAll('[name=clientes]').forEach(c => c.checked = todos)" class="rounded text-laton-500" aria-label="Seleccionar todos"></th>
+        <th class="py-2">Cliente</th><th class="py-2">Última visita</th><th class="py-2 text-right">Puntos</th><th class="px-5 py-2">Barbero</th></tr></thead>
+      <tbody class="divide-y divide-marfil-100">
+        {% for c in inactivos %}
+        <tr><td class="px-5 py-2"><input type="checkbox" name="clientes" value="{{ c.id }}" class="rounded text-laton-500"></td>
+          <td class="py-2"><a href="{% url 'panel:cliente_ficha' c.pk %}" class="font-medium hover:underline">{{ c.nombre }}</a></td>
+          <td class="py-2 tabular text-piedra-500">{{ c.ultima_visita|date:"d/m/Y" }} ({{ c.dias_inactivo }} d)</td>
+          <td class="py-2 text-right tabular">{{ c.puntos }}</td>
+          <td class="px-5 py-2 text-piedra-500">{{ c.barbero_preferido.nombre|default:"—" }}</td></tr>
+        {% empty %}<tr><td colspan="5" class="px-5 py-8 text-center text-piedra-500">¡Nadie inactivo en este rango!</td></tr>{% endfor %}
+      </tbody>
+    </table>
+    <div class="space-y-2 border-t border-marfil-100 p-5">
+      <label class="block text-sm font-medium">Mensaje de WhatsApp</label>
+      <textarea name="mensaje" rows="3" class="w-full rounded-lg border-marfil-100 text-sm">{{ plantilla }}</textarea>
+      <p class="text-xs text-piedra-500">Variables: {nombre}, {dias}, {puntos}, {enlace}. Al final se agrega automáticamente el enlace para darse de baja. Máximo un mensaje publicitario por cliente cada 7 días.</p>
+      <button {% if not en_horario %}disabled{% endif %} class="h-11 rounded-lg bg-laton-500 px-6 text-sm font-semibold text-carbon-950 disabled:opacity-40">Enviar a seleccionados</button>
+    </div>
+  </form>
+
+  <aside class="space-y-4">
+    <div class="rounded-card border border-marfil-100 bg-white p-5">
+      <h2 class="font-semibold">Recordatorios automáticos</h2>
+      <p class="mt-1 text-sm text-piedra-500">Se envían 24 h y 2 h antes con el comando <code class="rounded bg-marfil-50 px-1">enviar_recordatorios</code> (programado cada 15 min).</p>
+    </div>
+    <div class="rounded-card border border-marfil-100 bg-white p-5">
+      <h2 class="font-semibold">Top puntos</h2>
+      <ul class="mt-2 space-y-1 text-sm">{% for c in top_puntos %}<li class="flex justify-between"><span>{{ c.nombre }}</span><span class="tabular font-semibold">{{ c.puntos }}</span></li>{% endfor %}</ul>
+    </div>
+    <div class="rounded-card border border-marfil-100 bg-white p-5">
+      <h2 class="font-semibold">Últimos mensajes</h2>
+      <ul class="mt-2 space-y-2 text-xs">{% for m in mensajes %}<li><span class="font-medium">{{ m.get_tipo_display }}</span> · {{ m.cliente.nombre|default:m.telefono }} · <span class="text-piedra-500">{{ m.enviado|date:"d/m H:i" }} · {{ m.canal }}{% if not m.ok %} · <span class="text-poste">falló</span>{% endif %}</span></li>{% empty %}<li class="text-piedra-500">Aún no hay mensajes.</li>{% endfor %}</ul>
+    </div>
+  </aside>
+</div>
+{% endblock %}

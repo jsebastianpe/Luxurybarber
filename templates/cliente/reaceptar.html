@@ -1,0 +1,21 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}Actualizamos nuestra política{% endblock %}
+{% block contenido %}
+<div class="mx-auto max-w-xl pt-4">
+  <h1 class="font-display text-3xl">Actualizamos nuestra política de datos</h1>
+  <p class="mt-3 text-piedra-400">Publicamos la versión {{ POLITICA_VERSION }} de la <a href="{% url 'legal:privacidad' %}" target="_blank" class="text-laton-400 underline">Política de Tratamiento de Datos Personales</a> y de los <a href="{% url 'legal:terminos' %}" target="_blank" class="text-laton-400 underline">Términos y condiciones</a>. Tú aceptaste la versión {{ cliente.politica_version|default:"anterior" }}. Léelas y acéptalas para seguir usando tu cuenta.</p>
+  <form method="post" class="mt-6 space-y-4">{% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    <label class="flex items-start gap-3 text-sm"><input type="checkbox" name="acepta_datos" class="mt-0.5 h-5 w-5 flex-none rounded border-carbon-600 bg-carbon-800 text-laton-500">
+      <span class="text-piedra-400">{{ texto_autorizacion }}</span></label>
+    <label class="flex items-start gap-3 text-sm"><input type="checkbox" name="acepta_terminos" class="mt-0.5 h-5 w-5 flex-none rounded border-carbon-600 bg-carbon-800 text-laton-500">
+      <span class="text-piedra-400">Acepto los Términos y condiciones versión {{ TERMINOS_VERSION }}.</span></label>
+    <button class="h-12 w-full rounded-lg bg-laton-500 font-semibold text-carbon-950">Aceptar y continuar</button>
+  </form>
+  <p class="mt-6 text-sm text-piedra-400">Si no estás de acuerdo, puedes <a href="{% url 'cliente:descargar_datos' %}" class="underline">descargar tus datos</a> y eliminar tu cuenta.</p>
+  <form method="post" action="{% url 'cliente:eliminar_cuenta' %}" class="mt-3 flex gap-2 text-sm" x-data>{% csrf_token %}
+    <input name="confirmacion" placeholder="Escribe ELIMINAR" class="h-10 flex-1 rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50">
+    <button class="h-10 rounded-lg border border-poste px-4 text-[#e38a83]">Eliminar mi cuenta</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}Dejar de recibir publicidad{% endblock %}
+{% block contenido %}
+<div class="mx-auto max-w-md pt-6">
+  {% if hecho %}
+  <h1 class="font-display text-3xl">Listo, te diste de baja</h1>
+  <p class="mt-3 text-piedra-400">No volverás a recibir mensajes publicitarios. Seguirás recibiendo solo la confirmación y los recordatorios de las citas que reserves.</p>
+  {% else %}
+  <h1 class="font-display text-3xl">¿Dejar de recibir publicidad?</h1>
+  <p class="mt-3 text-piedra-400">Dejarás de recibir promociones e invitaciones de {{ RESP_NOMBRE }}. Tus citas y recordatorios no cambian.</p>
+  <form method="post" class="mt-6">{% csrf_token %}
+    <button class="h-12 w-full rounded-lg bg-laton-500 font-semibold text-carbon-950 hover:bg-laton-400">Sí, darme de baja</button>
+  </form>
+  {% endif %}
+  <p class="mt-6 text-sm"><a href="{% url 'cliente:inicio' %}" class="text-laton-400 underline">Ir al inicio</a></p>
+</div>
+{% endblock %}

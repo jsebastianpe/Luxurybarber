@@ -1,0 +1,27 @@
+{# Fragmento de horas libres. Se re-solicita cada 20 s para reflejar reservas de otros clientes. #}
+<div id="slots" class="mt-6 space-y-6"
+     hx-get="{% url 'cliente:horario_slots' %}?fecha={{ fecha|date:'Y-m-d' }}" hx-trigger="every 20s" hx-swap="outerHTML">
+  {% for nombre, slots in grupos %}
+  <section>
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wider text-piedra-400">{{ nombre }}</h2>
+    <div class="grid grid-cols-3 gap-2 sm:grid-cols-4">
+      {% for s in slots %}
+      {% with val=s.barbero_id|stringformat:"s"|add:"|"|add:s.inicio.isoformat %}
+      <button type="button" class="slot h-12 rounded-full border text-sm font-medium tabular transition"
+              data-slot="{{ val }}"
+              @click="sel = '{{ val }}'; etiqueta = '{{ s.inicio|dia_corto }} {{ s.inicio|date:"j" }}, {{ s.inicio|hora_corta }}–{{ s.fin|hora }}'; aviso = false"
+              :aria-pressed="sel === '{{ val }}'"
+              :class="sel === '{{ val }}' ? 'bg-laton-500 border-laton-500 text-carbon-950' : 'border-carbon-600 hover:border-laton-500/60'">
+        {{ s.inicio|hora_corta }} <span class="text-[11px] opacity-70">{% if s.inicio.hour < 12 %}a. m.{% else %}p. m.{% endif %}</span>
+      </button>
+      {% endwith %}
+      {% endfor %}
+    </div>
+  </section>
+  {% empty %}
+  <div class="rounded-card border border-carbon-600 bg-carbon-800 p-6 text-center">
+    <p class="font-semibold">No quedan horas libres este día.</p>
+    <p class="mt-1 text-sm text-piedra-400">Elige otro día en la tira de arriba{% if not request.session.reserva.barbero == "any" %} o <a class="text-laton-400 underline" href="{% url 'cliente:reservar_barbero' %}?barbero=any">prueba con cualquier barbero</a>{% endif %}.</p>
+  </div>
+  {% endfor %}
+</div>

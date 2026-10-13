@@ -1,0 +1,27 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}Mis puntos{% endblock %}
+{% block contenido %}
+<a href="{% url 'cliente:perfil' %}" class="text-sm text-piedra-400">← Perfil</a>
+<div class="mt-4 rounded-2xl border border-laton-500/40 bg-gradient-to-br from-cuero-600/40 to-carbon-800 p-6">
+  <p class="text-sm uppercase tracking-wider text-laton-400">Club {{ NEGOCIO.NOMBRE }}</p>
+  <p class="mt-2 font-display text-5xl tabular">{{ cliente.puntos }} <span class="text-2xl">pts</span></p>
+  <p class="mt-1 text-sm text-piedra-400">Ganas {{ NEGOCIO.PUNTOS_POR_MIL }} punto por cada $1.000 pagados.</p>
+</div>
+<h2 class="mt-8 text-lg font-semibold">Recompensas</h2>
+<div class="mt-3 space-y-3">
+  {% for r in recompensas %}
+  {% widthratio cliente.puntos r.puntos 100 as pct %}
+  <div class="rounded-card border border-carbon-600 bg-carbon-800 p-4">
+    <div class="flex justify-between"><p class="font-medium">{{ r.nombre }}</p><p class="text-sm tabular text-piedra-400">{{ r.puntos }} pts</p></div>
+    <div class="mt-3 h-1.5 rounded-full bg-carbon-600"><div class="h-1.5 rounded-full bg-laton-500" style="width: {% if pct|add:0 > 100 %}100{% else %}{{ pct }}{% endif %}%"></div></div>
+    {% if cliente.puntos >= r.puntos %}<p class="mt-2 text-sm text-[#8fc4a0]">¡Disponible! Pídela en tu próxima visita.</p>{% endif %}
+  </div>
+  {% endfor %}
+</div>
+{% if historial %}
+<h2 class="mt-8 text-lg font-semibold">Historial</h2>
+<ul class="mt-3 divide-y divide-carbon-600 rounded-card border border-carbon-600 bg-carbon-800 text-sm">
+  {% for c, p in historial %}<li class="flex justify-between px-4 py-3"><span>{{ c.inicio|date:"d/m/Y" }} · {{ c.nombres_servicios }}</span><span class="tabular text-laton-400">+{{ p }}</span></li>{% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

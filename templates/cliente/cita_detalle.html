@@ -1,0 +1,25 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}Detalle de cita{% endblock %}
+{% block contenido %}
+<div class="mx-auto max-w-md">
+  <a href="{% url 'cliente:mis_citas' %}" class="text-sm text-piedra-400">← Mis citas</a>
+  {% include "cliente/_tarjeta_cita.html" %}
+  {% if cita.notas_cliente %}<p class="mt-3 text-sm text-piedra-400">Nota: {{ cita.notas_cliente }}</p>{% endif %}
+  <div class="mt-5 grid grid-cols-2 gap-2 text-sm">
+    <a href="{% url 'cliente:cita_ics' cita.token %}" class="flex h-12 items-center justify-center rounded-lg border border-carbon-600">📅 Agregar al calendario</a>
+    <a href="https://www.google.com/maps/search/?api=1&query={{ NEGOCIO.DIRECCION|urlencode }}" target="_blank" rel="noopener" class="flex h-12 items-center justify-center rounded-lg border border-carbon-600">📍 Cómo llegar</a>
+  </div>
+  {% if cita.es_futura and cita.estado != "cancelada" and cita.estado != "completada" %}
+  <form method="post" class="mt-6 space-y-3" x-data="{ seguro: false }">
+    {% csrf_token %}
+    {% if not cita.puede_cancelar_gratis %}<p class="rounded-lg bg-ambar/10 px-4 py-3 text-sm text-ambar">Faltan menos de {{ cancelacion_horas }} h. Si cancelas ahora, cuenta como cancelación tardía.</p>{% endif %}
+    <button name="accion" value="reprogramar" class="h-12 w-full rounded-lg border-[1.5px] border-laton-500 font-medium text-laton-400">Reprogramar</button>
+    <button type="button" x-show="!seguro" @click="seguro = true" class="h-12 w-full text-sm text-piedra-400 underline">Cancelar cita</button>
+    <div x-show="seguro" x-cloak class="flex gap-2">
+      <button type="button" @click="seguro = false" class="h-11 flex-1 rounded-lg border border-carbon-600">No</button>
+      <button name="accion" value="cancelar" class="h-11 flex-1 rounded-lg bg-poste font-semibold">Sí, cancelar</button>
+    </div>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

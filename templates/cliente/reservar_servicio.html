@@ -1,0 +1,75 @@
+{% extends "cliente/reservar_base.html" %}
+{% block resumen_lateral %}{% endblock %}
+{% block paso %}
+<form method="post" x-data="servicios()" x-init="iniciar()">
+  {% csrf_token %}
+  <h1 class="font-display text-3xl">¿Qué te hacemos hoy?</h1>
+  <p class="mt-1 text-piedra-400">Puedes elegir varios, por ejemplo corte + barba.</p>
+
+  {% if ultima %}
+  <a href="{% url 'cliente:repetir' %}" class="mt-5 flex items-center justify-between rounded-card border border-laton-500/50 bg-laton-500/10 p-4">
+    <span><span class="block text-sm text-laton-400">Repetir mi último servicio</span>
+      <span class="font-medium">{{ ultima.nombres_servicios }} con {{ ultima.barbero.nombre }}</span></span>
+    <span class="text-laton-400">→</span>
+  </a>
+  {% endif %}
+
+  {# Pestañas de categoría #}
+  <div class="sin-scroll -mx-4 mt-6 flex gap-2 overflow-x-auto px-4" role="tablist">
+    <button type="button" role="tab" @click="cat = ''" :class="cat === '' ? 'bg-marfil-50 text-carbon-950' : 'bg-carbon-800 text-piedra-400'" class="h-9 flex-none rounded-full px-4 text-sm font-medium">Todos</button>
+    {% for clave, nombre, items in categorias %}
+    <button type="button" role="tab" @click="cat = '{{ clave }}'" :class="cat === '{{ clave }}' ? 'bg-marfil-50 text-carbon-950' : 'bg-carbon-800 text-piedra-400'" class="h-9 flex-none rounded-full px-4 text-sm font-medium">{{ nombre }}</button>
+    {% endfor %}
+  </div>
+
+  {% for clave, nombre, items in categorias %}
+  <section x-show="cat === '' || cat === '{{ clave }}'" class="mt-6">
+    <h2 class="mb-3 text-sm font-semibold uppercase tracking-wider text-piedra-400">{{ nombre }}</h2>
+    <div class="space-y-3">
+      {% for s in items %}
+      <label class="flex cursor-pointer items-center gap-4 rounded-card border-2 bg-carbon-800 p-4 transition"
+             :class="sel.includes({{ s.id }}) ? 'border-laton-500' : 'border-carbon-600 hover:border-carbon-600/40'">
+        <input type="checkbox" name="servicios" value="{{ s.id }}" class="sr-only" @change="alternar({{ s.id }}, {{ s.precio }}, {{ s.duracion_min }})" :checked="sel.includes({{ s.id }})">
+        <div class="flex-1">
+          <p class="font-semibold">{{ s.nombre }}</p>
+          <p class="text-sm text-piedra-400">{{ s.duracion_min|minutos }}{% if s.descripcion %} · {{ s.descripcion }}{% endif %}</p>
+          {% if s.ahorro %}<span class="mt-1 inline-block rounded-full bg-salvia/20 px-2 py-0.5 text-[11px] font-medium text-[#8fc4a0]">Ahorras {{ s.ahorro|cop }}</span>{% endif %}
+        </div>
+        <p class="font-semibold tabular">{{ s.precio|cop }}</p>
+        <span class="flex h-6 w-6 flex-none items-center justify-center rounded-md border-2"
+              :class="sel.includes({{ s.id }}) ? 'border-laton-500 bg-laton-500 text-carbon-950' : 'border-carbon-600'">
+          <svg x-show="sel.includes({{ s.id }})" class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>
+        </span>
+      </label>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+
+  {# Barra fija inferior con total acumulado #}
+  <div class="fixed inset-x-0 bottom-0 z-30 border-t border-carbon-600 bg-carbon-900/95 backdrop-blur md:static md:mt-8 md:border-0 md:bg-transparent" style="padding-bottom: env(safe-area-inset-bottom)">
+    <div class="mx-auto flex max-w-5xl items-center gap-4 px-4 py-3 md:px-0">
+      <div class="flex-1 text-sm">
+        <p class="text-piedra-400"><span x-text="sel.length"></span> servicio(s) · <span x-text="dur"></span></p>
+        <p class="text-lg font-semibold tabular" x-text="total"></p>
+      </div>
+      <button type="submit" :disabled="!sel.length" class="h-12 rounded-lg bg-laton-500 px-8 font-semibold text-carbon-950 transition hover:bg-laton-400 disabled:cursor-not-allowed disabled:opacity-40">Continuar</button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+{{ seleccion|json_script:"seleccion-inicial" }}
+<script>
+  const PRECIOS = { {% for c in categorias %}{% for s in c.2 %}{{ s.id }}: [{{ s.precio }}, {{ s.duracion_min }}],{% endfor %}{% endfor %} };
+  function servicios() {
+    return {
+      cat: '', sel: [],
+      iniciar() { this.sel = JSON.parse(document.getElementById('seleccion-inicial').textContent).filter(id => PRECIOS[id]); },
+      alternar(id) { this.sel = this.sel.includes(id) ? this.sel.filter(x => x !== id) : [...this.sel, id]; },
+      get total() { const t = this.sel.reduce((a, id) => a + PRECIOS[id][0], 0); return '$' + t.toLocaleString('es-CO'); },
+      get dur() { const m = this.sel.reduce((a, id) => a + PRECIOS[id][1], 0); return m < 60 ? m + ' min' : Math.floor(m/60) + ' h' + (m%60 ? ' ' + m%60 + ' min' : ''); },
+    }
+  }
+</script>
+{% endblock %}

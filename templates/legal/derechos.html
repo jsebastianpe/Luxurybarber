@@ -1,0 +1,64 @@
+{% extends "legal/base_legal.html" %}
+{% block titulo %}Ejercer mis derechos · {{ RESP_NOMBRE }}{% endblock %}
+{% block documento %}
+<h1>Ejercer mis derechos sobre mis datos</h1>
+<p>Usa este formulario para consultar, actualizar, corregir o suprimir tus datos personales, revocar tu autorización o presentar un reclamo. Es gratis.</p>
+{% if cliente %}
+<p class="rounded-card border border-laton-500/40 bg-laton-500/10 p-4 text-sm">Ya ingresaste con tu celular. Puedes resolverlo de inmediato en <a href="{% url 'cliente:perfil' %}#mis-datos">Mi perfil → Mis datos</a>: descargar tus datos, cambiar tus autorizaciones o eliminar tu cuenta.</p>
+{% endif %}
+<p>Responderemos las <strong>consultas en máximo 10 días hábiles</strong> y los <strong>reclamos en máximo 15 días hábiles</strong>. Al enviar el formulario recibirás un número de radicado.</p>
+
+<form method="post" enctype="multipart/form-data" class="mt-8 space-y-5" novalidate>
+  {% csrf_token %}
+  {% if errores.general %}<p class="rounded-lg bg-poste/20 px-4 py-3 text-sm text-marfil-50" role="alert">{{ errores.general }}</p>{% endif %}
+  <fieldset>
+    <legend class="mb-2 font-semibold text-marfil-50">¿Qué quieres hacer?</legend>
+    <div class="space-y-2">
+      {% for v, n in tipos %}
+      <label class="flex items-start gap-3 rounded-lg border border-carbon-600 bg-carbon-800 px-4 py-3 text-sm">
+        <input type="radio" name="tipo" value="{{ v }}" {% if datos.tipo == v %}checked{% endif %} required class="mt-1 border-carbon-600 bg-carbon-900 text-laton-500 focus:ring-laton-500">
+        <span class="text-marfil-50">{{ n }}</span>
+      </label>
+      {% endfor %}
+    </div>
+    {% if errores.tipo %}<p class="mt-1 text-sm text-[#e38a83]">{{ errores.tipo }}</p>{% endif %}
+  </fieldset>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <label class="block text-sm"><span class="text-piedra-400">Actúo como</span>
+      <select name="calidad" class="mt-1 h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50">
+        {% for v, n in calidades %}<option value="{{ v }}" {% if datos.calidad == v %}selected{% endif %}>{{ n }}</option>{% endfor %}
+      </select></label>
+    <label class="block text-sm"><span class="text-piedra-400">Nombre completo del titular</span>
+      <input name="nombre" value="{{ datos.nombre }}" required class="mt-1 h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50">
+      {% if errores.nombre %}<span class="text-[#e38a83]">{{ errores.nombre }}</span>{% endif %}</label>
+    <label class="block text-sm"><span class="text-piedra-400">Tipo de documento</span>
+      <select name="tipo_documento" class="mt-1 h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50">
+        {% for v, n in tipos_doc %}<option value="{{ v }}" {% if datos.tipo_documento == v %}selected{% endif %}>{{ n }}</option>{% endfor %}
+      </select></label>
+    <label class="block text-sm"><span class="text-piedra-400">Número de documento</span>
+      <input name="documento" value="{{ datos.documento }}" required inputmode="numeric" class="mt-1 h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50">
+      {% if errores.documento %}<span class="text-[#e38a83]">{{ errores.documento }}</span>{% endif %}</label>
+    <label class="block text-sm"><span class="text-piedra-400">Celular registrado con nosotros</span>
+      <input name="telefono" value="{{ datos.telefono }}" required inputmode="tel" class="mt-1 h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50">
+      {% if errores.telefono %}<span class="text-[#e38a83]">{{ errores.telefono }}</span>{% endif %}</label>
+    <label class="block text-sm"><span class="text-piedra-400">Correo para la respuesta</span>
+      <input name="email" type="email" value="{{ datos.email }}" required class="mt-1 h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50">
+      {% if errores.email %}<span class="text-[#e38a83]">{{ errores.email }}</span>{% endif %}</label>
+  </div>
+  <label class="block text-sm"><span class="text-piedra-400">Dirección (opcional)</span>
+    <input name="direccion" value="{{ datos.direccion }}" class="mt-1 h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50"></label>
+  <label class="block text-sm"><span class="text-piedra-400">Describe tu solicitud y los hechos</span>
+    <textarea name="descripcion" rows="5" required maxlength="3000" class="mt-1 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50">{{ datos.descripcion }}</textarea>
+    {% if errores.descripcion %}<span class="text-[#e38a83]">{{ errores.descripcion }}</span>{% endif %}</label>
+  <label class="block text-sm"><span class="text-piedra-400">Documento de soporte (opcional; obligatorio si actúas como causahabiente o representante). PDF o imagen, máximo 5 MB.</span>
+    <input type="file" name="adjunto" accept=".pdf,image/*" class="mt-1 block w-full text-sm text-piedra-400 file:mr-3 file:h-10 file:rounded-lg file:border-0 file:bg-carbon-700 file:px-4 file:text-marfil-50">
+    {% if errores.adjunto %}<span class="text-[#e38a83]">{{ errores.adjunto }}</span>{% endif %}</label>
+  <label class="flex items-start gap-3 text-sm">
+    <input type="checkbox" name="acepta" class="mt-0.5 h-5 w-5 rounded border-carbon-600 bg-carbon-800 text-laton-500 focus:ring-laton-500" {% if datos.acepta %}checked{% endif %}>
+    <span class="text-piedra-400">Autorizo el uso de estos datos únicamente para tramitar y responder esta solicitud, según la <a href="{% url 'legal:privacidad' %}">política de datos</a>.{% if errores.acepta %} <span class="block text-[#e38a83]">{{ errores.acepta }}</span>{% endif %}</span>
+  </label>
+  <button class="h-12 w-full rounded-lg bg-laton-500 font-semibold text-carbon-950 hover:bg-laton-400 sm:w-auto sm:px-10">Enviar solicitud</button>
+</form>
+<p class="mt-8 text-sm">También puedes escribir a {{ RESP.EMAIL_DATOS|default:"[COMPLETAR]" }} o acercarte a {{ RESP.DIRECCION }}.</p>
+{% endblock %}

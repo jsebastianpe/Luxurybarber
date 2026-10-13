@@ -1,0 +1,96 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}Mi perfil{% endblock %}
+{% block contenido %}
+<div class="flex items-end justify-between">
+  <h1 class="font-display text-3xl">Hola, {{ cliente.primer_nombre }}</h1>
+  <a href="{% url 'cliente:puntos' %}" class="rounded-full bg-laton-500/15 px-3 py-1 text-sm font-semibold text-laton-400 tabular">{{ cliente.puntos }} pts</a>
+</div>
+
+<form method="post" class="mt-8 grid gap-4 md:grid-cols-2">
+  {% csrf_token %}
+  <h2 class="text-lg font-semibold md:col-span-2">Mis preferencias de corte</h2>
+  <p class="-mt-3 text-sm text-piedra-400 md:col-span-2">Tu barbero las ve antes de cada cita, así no tienes que explicarlo otra vez.</p>
+  <label class="block"><span class="mb-1 block text-sm text-piedra-400">Nombre</span>
+    <input name="nombre" value="{{ cliente.nombre }}" class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 focus:border-laton-500 focus:ring-laton-500"></label>
+  <label class="block"><span class="mb-1 block text-sm text-piedra-400">Correo (opcional)</span>
+    <input name="email" type="email" value="{{ cliente.email }}" class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 focus:border-laton-500 focus:ring-laton-500"></label>
+  <label class="block"><span class="mb-1 block text-sm text-piedra-400">Número de máquina</span>
+    <input name="pref_maquina" value="{{ cliente.pref_maquina }}" placeholder="Ej.: 1 a los lados, 3 arriba" class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 placeholder-piedra-500 focus:border-laton-500 focus:ring-laton-500"></label>
+  <label class="block"><span class="mb-1 block text-sm text-piedra-400">Estilo</span>
+    <input name="pref_estilo" value="{{ cliente.pref_estilo }}" placeholder="Ej.: Fade medio, raya marcada" class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 placeholder-piedra-500 focus:border-laton-500 focus:ring-laton-500"></label>
+  <label class="block"><span class="mb-1 block text-sm text-piedra-400">Barba</span>
+    <input name="pref_barba" value="{{ cliente.pref_barba }}" placeholder="Ej.: Perfilada, toalla caliente" class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 placeholder-piedra-500 focus:border-laton-500 focus:ring-laton-500"></label>
+  <label class="block"><span class="mb-1 block text-sm text-piedra-400">Barbero preferido</span>
+    <select name="barbero_preferido" class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 focus:border-laton-500 focus:ring-laton-500">
+      <option value="">Sin preferencia</option>
+      {% for b in barberos %}<option value="{{ b.id }}" {% if cliente.barbero_preferido_id == b.id %}selected{% endif %}>{{ b.nombre }}</option>{% endfor %}
+    </select></label>
+  <div class="md:col-span-2"><button class="h-12 rounded-lg bg-laton-500 px-8 font-semibold text-carbon-950 hover:bg-laton-400">Guardar preferencias</button></div>
+</form>
+
+<section class="mt-12">
+  <h2 class="text-lg font-semibold">Mis fotos de referencia y cortes</h2>
+  {% if not cliente.acepta_sensibles %}
+  <p class="mt-2 text-sm text-piedra-400">Para guardar fotos necesitas autorizarlo en <a href="#mis-datos" class="text-laton-400 underline">Mis datos</a>. Es opcional.</p>
+  {% else %}
+  <form method="post" enctype="multipart/form-data" class="mt-4 flex flex-wrap items-center gap-3">
+    {% csrf_token %}
+    <input type="file" name="foto" accept="image/*" required class="text-sm text-piedra-400 file:mr-3 file:h-10 file:rounded-lg file:border-0 file:bg-carbon-700 file:px-4 file:text-marfil-50">
+    <input name="descripcion" placeholder="Descripción (opcional)" class="h-10 rounded-lg border-carbon-600 bg-carbon-800 text-sm text-marfil-50 placeholder-piedra-500">
+    <button class="h-10 rounded-lg border-[1.5px] border-laton-500 px-4 text-sm text-laton-400">Subir</button>
+  </form>
+  {% endif %}
+  <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+    {% for f in cliente.fotos.all %}
+    <figure class="group relative overflow-hidden rounded-card border border-carbon-600">
+      <img src="{% url 'legal:foto' f.pk %}" alt="{{ f.descripcion }}" class="aspect-square w-full object-cover">
+      <figcaption class="absolute inset-x-0 bottom-0 bg-carbon-950/80 px-2 py-1 text-[11px]">{% if f.es_resultado %}Resultado{% else %}Referencia{% endif %}{% if f.descripcion %} · {{ f.descripcion }}{% endif %}</figcaption>
+      {% if not f.es_resultado %}
+      <form method="post" action="{% url 'cliente:borrar_foto' f.pk %}" class="absolute right-1 top-1">{% csrf_token %}<button class="rounded-full bg-carbon-950/80 px-2 text-xs" aria-label="Eliminar foto">✕</button></form>
+      {% endif %}
+    </figure>
+    {% empty %}
+    <p class="col-span-full text-sm text-piedra-400">Aún no tienes fotos. Sube la referencia del corte que te gusta.</p>
+    {% endfor %}
+  </div>
+</section>
+<section id="mis-datos" class="mt-12 scroll-mt-24 rounded-card border border-carbon-600 bg-carbon-800 p-5">
+  <h2 class="text-lg font-semibold">Mis datos y autorizaciones</h2>
+  <p class="mt-1 text-sm text-piedra-400">Aceptaste la <a href="{% url 'legal:privacidad' %}" class="text-laton-400 underline">política de datos</a> versión {{ cliente.politica_version }}{% if cliente.autorizado_en %} el {{ cliente.autorizado_en|date:"d/m/Y" }}{% endif %}. Puedes cambiar estas autorizaciones cuando quieras.</p>
+  <form method="post" action="{% url 'cliente:autorizaciones' %}" class="mt-4 space-y-3">{% csrf_token %}
+    <label class="flex items-start gap-3 text-sm">
+      <input type="checkbox" name="acepta_whatsapp" {% if cliente.acepta_whatsapp %}checked{% endif %} class="mt-0.5 h-5 w-5 flex-none rounded border-carbon-600 bg-carbon-900 text-laton-500 focus:ring-laton-500">
+      <span class="text-piedra-400"><strong class="text-marfil-50">Mensajes de mis citas</strong> (confirmación y recordatorios por WhatsApp).</span></label>
+    <label class="flex items-start gap-3 text-sm">
+      <input type="checkbox" name="acepta_marketing" {% if cliente.acepta_marketing %}checked{% endif %} class="mt-0.5 h-5 w-5 flex-none rounded border-carbon-600 bg-carbon-900 text-laton-500 focus:ring-laton-500">
+      <span class="text-piedra-400"><strong class="text-marfil-50">Publicidad.</strong> {{ texto_marketing }}</span></label>
+    <label class="flex items-start gap-3 text-sm">
+      <input type="checkbox" name="acepta_sensibles" {% if cliente.acepta_sensibles %}checked{% endif %} class="mt-0.5 h-5 w-5 flex-none rounded border-carbon-600 bg-carbon-900 text-laton-500 focus:ring-laton-500">
+      <span class="text-piedra-400"><strong class="text-marfil-50">Fotografías.</strong> {{ texto_sensibles }} Si la desmarcas, borramos tus fotos.</span></label>
+    <button class="h-11 rounded-lg bg-laton-500 px-6 text-sm font-semibold text-carbon-950">Guardar autorizaciones</button>
+  </form>
+
+  <div class="mt-6 grid gap-3 border-t border-carbon-600 pt-5 sm:grid-cols-2">
+    <a href="{% url 'cliente:descargar_datos' %}" class="flex h-11 items-center justify-center rounded-lg border-[1.5px] border-laton-500 text-sm text-laton-400">Descargar todos mis datos</a>
+    <a href="{% url 'legal:derechos' %}" class="flex h-11 items-center justify-center rounded-lg border border-carbon-600 text-sm">Otra consulta o reclamo</a>
+  </div>
+
+  {% if consentimientos %}
+  <details class="mt-5 text-sm">
+    <summary class="cursor-pointer text-piedra-400">Historial de mis autorizaciones</summary>
+    <ul class="mt-2 space-y-1 text-xs text-piedra-400">{% for k in consentimientos %}<li>{{ k.fecha|date:"d/m/Y H:i" }} · {{ k.get_tipo_display }}: <span class="{% if k.otorgado %}text-[#8fc4a0]{% else %}text-[#e38a83]{% endif %}">{% if k.otorgado %}autorizó{% else %}no autorizó / revocó{% endif %}</span> · v{{ k.version }} · {{ k.get_canal_display }}</li>{% endfor %}</ul>
+  </details>
+  {% endif %}
+
+  <div x-data="{ abrir: false }" class="mt-6 border-t border-carbon-600 pt-5">
+    <button type="button" @click="abrir = !abrir" class="text-sm text-[#e38a83] underline">Eliminar mi cuenta y mis datos</button>
+    <form x-show="abrir" x-cloak method="post" action="{% url 'cliente:eliminar_cuenta' %}" class="mt-3 space-y-3 rounded-lg border border-poste/60 p-4 text-sm">{% csrf_token %}
+      <p class="text-piedra-400">Cancelaremos tus citas futuras y borraremos tu nombre, celular, correo, preferencias, notas, fotos y puntos. Los registros de servicios y pagos se conservan sin datos que te identifiquen, porque la ley nos obliga a guardar los soportes contables. Esto no se puede deshacer.</p>
+      <label class="block text-piedra-400">Escribe <strong class="text-marfil-50">ELIMINAR</strong> para confirmar
+        <input name="confirmacion" autocomplete="off" class="mt-1 h-11 w-full rounded-lg border-carbon-600 bg-carbon-900 text-marfil-50"></label>
+      <button class="h-11 rounded-lg bg-poste px-6 font-semibold text-marfil-50">Eliminar definitivamente</button>
+    </form>
+  </div>
+</section>
+<p class="mt-8"><a href="{% url 'cliente:salir' %}" class="text-sm text-piedra-400 underline">Cerrar sesión</a></p>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "cliente/reservar_base.html" %}
+{% block volver %}<a href="{% url 'cliente:reservar_horario' %}" class="text-piedra-400 hover:text-marfil-50">← Volver</a>{% endblock %}
+{% block resumen_lateral %}{% endblock %}
+{% block paso %}
+<form method="post" enctype="multipart/form-data" x-data="{ enviando: false }" @submit="enviando = true">
+  {% csrf_token %}
+  <h1 class="font-display text-3xl">Revisa y confirma</h1>
+
+  {% if retencion %}
+  <p class="mt-2 text-sm text-piedra-400" x-data="cuenta('{{ retencion.expira|iso }}')" x-init="iniciar()">
+    Te guardamos este horario por <span class="font-semibold tabular text-laton-400" x-text="texto"></span>
+    <span x-show="vencido" x-cloak class="block text-ambar">El tiempo terminó. <a class="underline" href="{% url 'cliente:reservar_horario' %}">Buscar horas de nuevo</a> — conservamos tus servicios y barbero.</span>
+  </p>
+  {% endif %}
+
+  {# Resumen editable #}
+  <div class="mt-5 divide-y divide-carbon-600 rounded-card border border-carbon-600 bg-carbon-800">
+    <div class="flex items-center justify-between p-4">
+      <div><p class="text-sm text-piedra-400">Servicios</p><p class="font-medium">{{ resumen.nombres }}</p></div>
+      <a href="{% url 'cliente:reservar_servicio' %}" class="text-sm text-laton-400 hover:underline">Cambiar</a>
+    </div>
+    <div class="flex items-center justify-between p-4">
+      <div class="flex items-center gap-3">
+        {% include "componentes/_avatar.html" with b=resumen.barbero size="h-10 w-10 text-sm" %}
+        <div><p class="text-sm text-piedra-400">Barbero</p><p class="font-medium">{{ resumen.barbero.nombre }}</p></div>
+      </div>
+      <a href="{% url 'cliente:reservar_barbero' %}" class="text-sm text-laton-400 hover:underline">Cambiar</a>
+    </div>
+    <div class="flex items-center justify-between p-4">
+      <div><p class="text-sm text-piedra-400">Fecha y hora</p><p class="font-medium">{{ resumen.inicio|fecha_larga|capfirst }} · {{ resumen.inicio|hora_corta }}–{{ resumen.fin|hora }}</p></div>
+      <a href="{% url 'cliente:reservar_horario' %}?fecha={{ resumen.inicio|date:'Y-m-d' }}" class="text-sm text-laton-400 hover:underline">Cambiar</a>
+    </div>
+    <div class="flex items-center justify-between p-4">
+      <p class="text-piedra-400">{{ resumen.duracion|minutos }} · {{ NEGOCIO.DIRECCION }}</p>
+      <p class="text-lg font-semibold tabular text-laton-400">{{ resumen.total|cop }}</p>
+    </div>
+  </div>
+
+  {# Datos mínimos #}
+  <h2 class="mt-8 text-lg font-semibold">Tus datos</h2>
+  <div class="mt-3 space-y-4">
+    <div>
+      <label for="nombre" class="mb-1 block text-sm text-piedra-400">Nombre</label>
+      <input id="nombre" name="nombre" value="{{ datos.nombre }}" autocomplete="name" required
+             class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 placeholder-piedra-500 focus:border-laton-500 focus:ring-laton-500 {% if errores.nombre %}border-poste{% endif %}">
+      {% if errores.nombre %}<p class="mt-1 text-sm text-[#e38a83]">{{ errores.nombre }}</p>{% endif %}
+    </div>
+    <div>
+      <label for="telefono" class="mb-1 block text-sm text-piedra-400">Celular (WhatsApp)</label>
+      <div class="flex gap-2">
+        <input id="telefono" name="telefono" value="{{ datos.telefono }}" inputmode="tel" autocomplete="tel" placeholder="300 123 4567" required
+               class="h-12 min-w-0 flex-1 rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 placeholder-piedra-500 focus:border-laton-500 focus:ring-laton-500 {% if errores.telefono %}border-poste{% endif %}">
+        {% if not cliente %}
+        <button type="button" hx-post="{% url 'cliente:enviar_codigo' %}" hx-include="#telefono" hx-target="#otp" hx-swap="innerHTML"
+                class="h-12 flex-none rounded-lg border-[1.5px] border-laton-500 px-4 text-sm font-medium text-laton-400 hover:bg-laton-500/10">
+          Enviar código
+        </button>
+        {% endif %}
+      </div>
+      {% if errores.telefono %}<p class="mt-1 text-sm text-[#e38a83]">{{ errores.telefono }}</p>{% endif %}
+      {% if not cliente %}<p class="mt-1 text-xs text-piedra-500">Usaremos tu celular solo para verificar que es tuyo y para los mensajes de tu cita.</p>{% endif %}
+      {% if cliente %}<p class="mt-1 text-xs text-piedra-400">Ya verificamos este número. Si lo cambias, te pediremos un código.</p>{% endif %}
+    </div>
+    <div id="otp" aria-live="polite">
+      {% if errores.codigo %}{% include "cliente/_otp.html" with enviado=True error=errores.codigo %}{% endif %}
+    </div>
+    {% if cliente %}
+    <div x-data="{ cambiar: false }">
+      <button type="button" class="text-sm text-laton-400 underline" @click="cambiar = !cambiar">¿Usar otro número?</button>
+      <div x-show="cambiar" x-cloak class="mt-2 flex gap-2">
+        <button type="button" hx-post="{% url 'cliente:enviar_codigo' %}" hx-include="#telefono" hx-target="#otp" class="h-10 rounded-lg border-[1.5px] border-laton-500 px-4 text-sm text-laton-400">Enviar código al nuevo número</button>
+      </div>
+    </div>
+    {% endif %}
+    <div>
+      <label for="notas" class="mb-1 block text-sm text-piedra-400">¿Algo que debamos saber? <span class="text-piedra-500">(opcional)</span></label>
+      <input id="notas" name="notas" value="{{ datos.notas }}" maxlength="240" placeholder="Ej.: degradado bajo, no tan corto arriba" aria-describedby="ayuda-notas"
+             class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 placeholder-piedra-500 focus:border-laton-500 focus:ring-laton-500">
+      <p id="ayuda-notas" class="mt-1 text-xs text-piedra-500">No escribas información de salud; si tienes alguna alergia, coméntala en persona.</p>
+    </div>
+    <div x-data="{ conFoto: false }">
+      <label class="mb-1 block text-sm text-piedra-400">Foto de referencia <span class="text-piedra-500">(opcional)</span></label>
+      <input type="file" name="foto" accept="image/jpeg,image/png,image/webp,image/heic" @change="conFoto = $event.target.files.length > 0"
+             class="block w-full text-sm text-piedra-400 file:mr-3 file:h-10 file:rounded-lg file:border-0 file:bg-carbon-700 file:px-4 file:text-marfil-50">
+      {% if errores.foto %}<p class="mt-1 text-sm text-[#e38a83]">{{ errores.foto }}</p>{% endif %}
+      <label x-show="conFoto || {{ datos.acepta_fotos|yesno:'true,false' }}" x-cloak class="mt-3 flex items-start gap-3 rounded-lg border border-carbon-600 p-3 text-sm">
+        <input type="checkbox" name="acepta_fotos" {% if datos.acepta_fotos %}checked{% endif %} class="mt-0.5 h-5 w-5 flex-none rounded border-carbon-600 bg-carbon-800 text-laton-500 focus:ring-laton-500">
+        <span class="text-piedra-400"><strong class="text-marfil-50">Fotografías (dato sensible, opcional).</strong> {{ texto_sensibles }}</span>
+      </label>
+    </div>
+
+    {# Aviso de privacidad y autorizaciones (Decreto 1074 de 2015, arts. 2.2.2.25.2.2, 2.2.2.25.2.3 y 2.2.2.25.3.3) #}
+    <section class="space-y-3 rounded-card border border-carbon-600 bg-carbon-800/60 p-4" aria-labelledby="titulo-aviso">
+      <h2 id="titulo-aviso" class="text-sm font-semibold uppercase tracking-wider text-piedra-400">Tus datos y autorizaciones</h2>
+      <p class="text-xs leading-relaxed text-piedra-400">
+        <strong class="text-marfil-50">Aviso de privacidad.</strong> {{ RESP_NOMBRE }} ({{ RESP.TIPO_ID }} {{ RESP.NUMERO_ID|default:"por completar" }}), {{ RESP.DIRECCION }}, {{ RESP.TELEFONO }}{% if RESP.EMAIL_DATOS %}, {{ RESP.EMAIL_DATOS }}{% endif %}, tratará tus datos para gestionar tu reserva, enviarte la confirmación y los recordatorios por WhatsApp y prestarte el servicio. Puedes conocer, actualizar, rectificar y suprimir tus datos y revocar tu autorización. Responder sobre datos sensibles (fotografías) es facultativo.
+        Lee la <a href="{% url 'legal:privacidad' %}" target="_blank" class="text-laton-400 underline">Política de Tratamiento de Datos</a> y los <a href="{% url 'legal:terminos' %}" target="_blank" class="text-laton-400 underline">Términos y condiciones</a>.
+      </p>
+      {% if ya_autorizado %}
+      <p class="text-sm text-[#8fc4a0]">Ya aceptaste la política de datos versión {{ POLITICA_VERSION }} y los términos. Puedes cambiar tus autorizaciones en <a href="{% url 'cliente:perfil' %}#mis-datos" class="underline">Mis datos</a>.</p>
+      {% else %}
+      <label class="flex items-start gap-3 text-sm">
+        <input type="checkbox" name="acepta_datos" {% if datos.acepta_datos %}checked{% endif %} required class="mt-0.5 h-5 w-5 flex-none rounded border-carbon-600 bg-carbon-800 text-laton-500 focus:ring-laton-500">
+        <span class="text-piedra-400"><strong class="text-marfil-50">Obligatoria.</strong> {{ texto_autorizacion }}{% if errores.acepta_datos %} <span class="block text-[#e38a83]">{{ errores.acepta_datos }}</span>{% endif %}</span>
+      </label>
+      <label class="flex items-start gap-3 text-sm">
+        <input type="checkbox" name="acepta_terminos" {% if datos.acepta_terminos %}checked{% endif %} required class="mt-0.5 h-5 w-5 flex-none rounded border-carbon-600 bg-carbon-800 text-laton-500 focus:ring-laton-500">
+        <span class="text-piedra-400"><strong class="text-marfil-50">Obligatoria.</strong> Acepto los <a href="{% url 'legal:terminos' %}" target="_blank" class="text-laton-400 underline">Términos y condiciones</a> versión {{ TERMINOS_VERSION }}.{% if errores.acepta_terminos %} <span class="block text-[#e38a83]">{{ errores.acepta_terminos }}</span>{% endif %}</span>
+      </label>
+      {% endif %}
+      {% if not cliente.acepta_marketing %}
+      <label class="flex items-start gap-3 text-sm">
+        <input type="checkbox" name="acepta_marketing" {% if datos.acepta_marketing %}checked{% endif %} class="mt-0.5 h-5 w-5 flex-none rounded border-carbon-600 bg-carbon-800 text-laton-500 focus:ring-laton-500">
+        <span class="text-piedra-400"><strong class="text-marfil-50">Opcional.</strong> {{ texto_marketing }}</span>
+      </label>
+      {% endif %}
+    </section>
+    <p class="rounded-lg bg-carbon-800 px-4 py-3 text-sm text-piedra-400">Puedes cancelar o reprogramar gratis hasta {{ cancelacion_horas }} horas antes.</p>
+  </div>
+
+  <div class="fixed inset-x-0 bottom-0 z-30 border-t border-carbon-600 bg-carbon-900/95 backdrop-blur md:static md:mt-8 md:border-0 md:bg-transparent" style="padding-bottom: env(safe-area-inset-bottom)">
+    <div class="mx-auto max-w-5xl px-4 py-3 md:px-0">
+      <button type="submit" :disabled="enviando" class="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-laton-500 font-semibold text-carbon-950 hover:bg-laton-400 disabled:opacity-70 md:w-auto md:px-10">
+        <svg x-show="enviando" x-cloak class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-opacity=".3" stroke-width="3"/><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3"/></svg>
+        <span x-text="enviando ? 'Confirmando…' : 'Confirmar reserva'">Confirmar reserva</span>
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  function cuenta(expira) {
+    return {
+      texto: '', vencido: false, t: null,
+      iniciar() { this.tick(); this.t = setInterval(() => this.tick(), 1000); },
+      tick() {
+        const s = Math.max(0, Math.floor((new Date(expira) - new Date()) / 1000));
+        this.texto = Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+        if (s === 0) { this.vencido = true; clearInterval(this.t); }
+      },
+    }
+  }
+</script>
+{% endblock %}

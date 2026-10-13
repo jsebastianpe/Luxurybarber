@@ -1,0 +1,27 @@
+{% load static %}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preload" href="{% static 'fonts/inter-latin-wght-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
+{% if NEGOCIO_TAILWIND_CDN %}
+{# Modo CDN: útil para prototipar clases nuevas sin compilar. No usar en producción. #}
+<script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+<script>
+  tailwind.config = { theme: { extend: {
+    colors: {
+      carbon: { 950: '#14110F', 900: '#1A1714', 800: '#23201D', 700: '#2D2925', 600: '#3A3531' },
+      marfil: { 50: '#F7F2EA', 100: '#EFE7DA' }, piedra: { 400: '#9A928A', 500: '#7A736C' },
+      laton: { 400: '#D7B776', 500: '#C9A45C', 700: '#8E6F33' }, cuero: { 600: '#8A4B2C' },
+      poste: '#A3312A', salvia: '#4F8A63', ambar: '#D19A2A',
+    },
+    fontFamily: { display: ['"DM Serif Display"', 'serif'], sans: ['Inter', 'system-ui', 'sans-serif'] },
+    borderRadius: { card: '10px' },
+  }}}
+</script>
+{% else %}
+<link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+{% endif %}
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+<script src="{% static 'vendor/htmx.min.js' %}" defer></script>
+<script src="{% static 'vendor/alpine.min.js' %}" defer></script>
+<link rel="icon" href="{% static 'img/icono.svg' %}" type="image/svg+xml">
+<meta name="theme-color" content="#14110F">

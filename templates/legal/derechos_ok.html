@@ -1,0 +1,15 @@
+{% extends "legal/base_legal.html" %}
+{% block titulo %}Solicitud radicada{% endblock %}
+{% block documento %}
+<h1>Recibimos tu solicitud</h1>
+<p>Tu número de radicado es <strong class="tabular text-laton-400">{{ s.radicado }}</strong>. Guárdalo para cualquier seguimiento.</p>
+<div class="tabla"><table>
+  <tr><th>Tipo</th><td>{{ s.get_tipo_display }}</td></tr>
+  <tr><th>Recibida</th><td>{{ s.recibida_en|date:"d/m/Y" }} a las {{ s.recibida_en|hora }}</td></tr>
+  <tr><th>Fecha máxima de respuesta</th><td>{{ s.vence_en|date:"d/m/Y" }} ({% if s.es_reclamo %}15{% else %}10{% endif %} días hábiles)</td></tr>
+  <tr><th>Respuesta a</th><td>{{ s.email }}</td></tr>
+</table></div>
+{% if s.es_reclamo %}<p>Mientras se resuelve, tu registro tendrá la marca «reclamo en trámite».</p>{% endif %}
+<p>Si necesitamos más información para tramitarla, te escribiremos dentro de los 5 días siguientes.</p>
+<p><a href="{% url 'cliente:inicio' %}">Volver al inicio</a></p>
+{% endblock %}

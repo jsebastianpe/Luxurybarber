@@ -1,0 +1,176 @@
+{% extends "legal/base_legal.html" %}
+{% block titulo %}Política de Tratamiento de Datos Personales · {{ RESP_NOMBRE }}{% endblock %}
+{% block documento %}
+<h1>Política de Tratamiento de Datos Personales</h1>
+<p class="text-sm">Versión {{ POLITICA_VERSION }} · Vigente desde el {{ POLITICA_VIGENCIA|fecha_larga }} de {{ POLITICA_VIGENCIA|date:"Y" }}</p>
+
+<p>En {{ RESP_NOMBRE }} respetamos tu privacidad. Este documento explica qué datos personales recogemos, para qué los usamos, cuánto tiempo los guardamos, con quién los compartimos y cómo puedes ejercer tus derechos. Cumple con la Ley Estatutaria 1581 de 2012, el Decreto 1074 de 2015 (capítulos 25 y 26, que incorporan el Decreto 1377 de 2013), la Ley 2300 de 2023 y las instrucciones de la Superintendencia de Industria y Comercio (SIC).</p>
+
+<h2>1. Responsable del tratamiento</h2>
+<div class="tabla"><table>
+  <tr><th>Nombre o razón social</th><td>{{ RESP.RAZON_SOCIAL|default:"[COMPLETAR]" }}</td></tr>
+  <tr><th>Identificación</th><td>{{ RESP.TIPO_ID }} {{ RESP.NUMERO_ID|default:"[COMPLETAR]" }}</td></tr>
+  <tr><th>Domicilio</th><td>{{ RESP.DOMICILIO }}</td></tr>
+  <tr><th>Dirección</th><td>{{ RESP.DIRECCION }}</td></tr>
+  <tr><th>Correo para datos personales</th><td>{{ RESP.EMAIL_DATOS|default:"[COMPLETAR]" }}</td></tr>
+  <tr><th>Teléfono</th><td>{{ RESP.TELEFONO }}</td></tr>
+  <tr><th>Área que atiende consultas y reclamos</th><td>{{ RESP.AREA_RESPONSABLE }}</td></tr>
+</table></div>
+
+<h2>2. Definiciones</h2>
+<ul>
+  <li><strong>Dato personal:</strong> información que te identifica o puede identificarte, como tu nombre o tu celular.</li>
+  <li><strong>Dato sensible:</strong> el que afecta tu intimidad o cuyo uso indebido puede generar discriminación. Aquí tratamos como sensible tu fotografía o imagen y cualquier información de salud que decidas compartir.</li>
+  <li><strong>Titular:</strong> la persona a quien se refieren los datos, es decir, tú.</li>
+  <li><strong>Tratamiento:</strong> cualquier operación con los datos: recolección, almacenamiento, uso, circulación o supresión.</li>
+  <li><strong>Autorización:</strong> tu consentimiento previo, expreso e informado para el tratamiento.</li>
+  <li><strong>Encargado:</strong> quien trata datos por cuenta del responsable, por ejemplo el proveedor de servidores.</li>
+  <li><strong>Transmisión:</strong> envío de datos a un encargado, dentro o fuera de Colombia, para que los trate por cuenta del responsable.</li>
+</ul>
+
+<h2>3. Principios que aplicamos</h2>
+<p>Legalidad, finalidad, libertad, veracidad o calidad, transparencia, acceso y circulación restringida, seguridad y confidencialidad (Ley 1581 de 2012, artículo 4). En la práctica:</p>
+<ul>
+  <li>Solo pedimos los datos necesarios para reservar y atenderte.</li>
+  <li>No vendemos ni alquilamos tus datos.</li>
+  <li>Las autorizaciones opcionales vienen sin marcar.</li>
+</ul>
+
+<h2>4. Datos que recolectamos</h2>
+<div class="tabla"><table>
+  <thead><tr><th>Dato</th><th>Cómo lo obtenemos</th><th>¿Es obligatorio?</th></tr></thead>
+  <tbody>
+    <tr><td>Nombre y celular</td><td>Formulario de reserva o registro en el local</td><td>Sí, para reservar y verificar tu identidad</td></tr>
+    <tr><td>Correo electrónico y fecha de nacimiento</td><td>Tu perfil</td><td>No</td></tr>
+    <tr><td>Citas, servicios, barbero, pagos, propinas y puntos</td><td>Uso del servicio</td><td>Sí, para prestar el servicio y por obligaciones contables</td></tr>
+    <tr><td>Preferencias de corte y notas del equipo sobre tu servicio</td><td>Tú o tu barbero</td><td>No</td></tr>
+    <tr><td>Fotografías de referencia o del resultado (dato sensible)</td><td>Tú o tu barbero, solo si lo autorizas</td><td><strong>No. Es facultativo.</strong></td></tr>
+    <tr><td>Dirección IP, navegador y fecha en que diste tu autorización</td><td>Automáticamente al aceptar</td><td>Sí, como prueba de tu autorización</td></tr>
+  </tbody>
+</table></div>
+<p>No pedimos tu número de cédula para reservar. Solo lo pedimos si presentas una consulta o reclamo, para verificar que eres el titular.</p>
+
+<h2>5. Finalidades del tratamiento</h2>
+<p>Con tu autorización usaremos tus datos para:</p>
+<ol>
+  <li>Crear, confirmar, reprogramar y cancelar tus citas, y verificar tu número con un código.</li>
+  <li>Enviarte por WhatsApp (o SMS como respaldo) la confirmación, los recordatorios 24 y 2 horas antes, y los cambios de tus citas.</li>
+  <li>Prestarte el servicio según tus preferencias y tu historial.</li>
+  <li>Registrar pagos, propinas y comisiones del personal, y cumplir obligaciones contables y tributarias.</li>
+  <li>Administrar el programa de puntos.</li>
+  <li>Atender tus peticiones, quejas, reclamos y solicitudes sobre datos personales.</li>
+  <li>Elaborar estadísticas internas del negocio (horas pico, servicios más pedidos) sin identificarte.</li>
+  <li><strong>Solo si lo autorizas aparte:</strong> enviarte promociones, novedades e invitaciones a volver.</li>
+  <li><strong>Solo si lo autorizas aparte:</strong> guardar fotografías de tu referencia o de tu corte.</li>
+</ol>
+<p>Si en el futuro queremos usar tus datos para una finalidad distinta, te pediremos una nueva autorización.</p>
+
+<h2>6. Datos sensibles</h2>
+<p>Tu fotografía o imagen la tratamos como dato sensible.</p>
+<ul>
+  <li><strong>No estás obligado a autorizar su tratamiento</strong> ni a responder preguntas sobre datos sensibles. Negarte no te impide reservar ni recibir el servicio.</li>
+  <li>Las fotos se usan solo para registrar tu estilo y tu historial. No se publican en redes sociales ni en publicidad sin una autorización adicional, escrita y específica.</li>
+  <li>Solo las ve el personal que te atiende.</li>
+  <li>Te recomendamos no escribir información de salud en las notas. Si tienes alguna alergia o condición en la piel, cuéntasela en persona a tu barbero.</li>
+</ul>
+
+<h2>7. Niños, niñas y adolescentes</h2>
+<p>El sitio está dirigido a personas mayores de 18 años. Cuando reservas un servicio para un menor de edad, por ejemplo un corte infantil, lo haces como su representante legal y con tus propios datos.</p>
+<ul>
+  <li>No pedimos datos del menor.</li>
+  <li>No tomamos ni guardamos fotografías de menores.</li>
+  <li>El menor debe asistir acompañado de un adulto responsable.</li>
+</ul>
+<p>Esto responde al interés superior del menor y a los artículos 7 de la Ley 1581 de 2012 y 2.2.2.25.2.9 del Decreto 1074 de 2015.</p>
+
+<h2>8. Tus derechos como titular</h2>
+<p>Según el artículo 8 de la Ley 1581 de 2012, tienes derecho a:</p>
+<ol>
+  <li>Conocer, actualizar y rectificar tus datos, incluso cuando estén incompletos, sean inexactos o induzcan a error.</li>
+  <li>Pedir prueba de la autorización que nos diste.</li>
+  <li>Saber, previa solicitud, qué uso le hemos dado a tus datos.</li>
+  <li>Presentar quejas ante la Superintendencia de Industria y Comercio, después de haber presentado tu consulta o reclamo ante nosotros.</li>
+  <li>Revocar la autorización o pedir la supresión de tus datos cuando no se respeten los principios, derechos y garantías legales. La supresión no procede sobre la información que debamos conservar por un deber legal o contractual.</li>
+  <li>Acceder gratis a tus datos, al menos una vez al mes y cada vez que cambie sustancialmente esta política.</li>
+</ol>
+<p>Puedes ejercer estos derechos tú, tus causahabientes o tu representante o apoderado, acreditando esa calidad.</p>
+
+<h2>9. Cómo ejercer tus derechos</h2>
+<h3>Canales</h3>
+<ul>
+  <li>Formulario en línea: <a href="{% url 'legal:derechos' %}">Ejercer mis derechos</a>. Te entrega un número de radicado.</li>
+  <li>Correo electrónico: {{ RESP.EMAIL_DATOS|default:"[COMPLETAR]" }}.</li>
+  <li>De forma presencial en {{ RESP.DIRECCION }}.</li>
+  <li>Si ya ingresaste con tu celular: en <a href="{% url 'cliente:perfil' %}">Mi perfil</a> puedes descargar tus datos, cambiar tus autorizaciones o eliminar tu cuenta de inmediato.</li>
+</ul>
+<h3>Consultas (Ley 1581 de 2012, artículo 14)</h3>
+<p>Responderemos en un máximo de <strong>diez (10) días hábiles</strong> desde el día siguiente a la fecha de recibo. Si no podemos hacerlo en ese plazo, te informaremos el motivo y la nueva fecha de respuesta, que no superará cinco (5) días hábiles adicionales.</p>
+<h3>Reclamos: corrección, actualización, supresión, revocatoria o incumplimiento (artículo 15)</h3>
+<ul>
+  <li>El reclamo debe incluir tu identificación, la descripción de los hechos, tu dirección o correo y los documentos que quieras hacer valer.</li>
+  <li>Si está incompleto, te lo pediremos dentro de los cinco (5) días siguientes a su recibo. Si en dos (2) meses no recibimos lo faltante, entenderemos que desististe.</li>
+  <li>Dentro de los dos (2) días hábiles siguientes a recibir el reclamo completo, tu registro mostrará la leyenda «reclamo en trámite» y el motivo, hasta que se decida.</li>
+  <li>Responderemos en un máximo de <strong>quince (15) días hábiles</strong> desde el día siguiente al recibo. Si no es posible, te informaremos el motivo y la nueva fecha, que no superará ocho (8) días hábiles adicionales.</li>
+</ul>
+<h3>Requisito ante la SIC</h3>
+<p>Solo podrás presentar una queja ante la <a href="https://www.sic.gov.co" target="_blank" rel="noopener">Superintendencia de Industria y Comercio</a> después de haber agotado la consulta o el reclamo ante nosotros (artículo 16).</p>
+
+<h2>10. Revocatoria y supresión</h2>
+<p>Puedes revocar en cualquier momento las autorizaciones opcionales (publicidad y fotografías). Al hacerlo dejamos de enviarte publicidad y borramos tus fotos.</p>
+<p>Si pides suprimir tus datos o eliminar tu cuenta:</p>
+<ul>
+  <li>Cancelamos tus citas futuras.</li>
+  <li>Borramos tu nombre, celular, correo, preferencias, notas y fotos.</li>
+  <li>Los registros de servicios y pagos se conservan sin datos que te identifiquen, porque son soportes contables que la ley nos obliga a guardar.</li>
+  <li>Conservamos la prueba de las autorizaciones que nos diste, durante el término legal, para demostrar que cumplimos.</li>
+</ul>
+
+<h2>11. Encargados y transferencias internacionales</h2>
+<p>Para operar compartimos datos únicamente con encargados que los tratan por nuestra cuenta, bajo contratos de transmisión que les exigen confidencialidad y seguridad (artículo 2.2.2.25.5.2 del Decreto 1074 de 2015):</p>
+<div class="tabla"><table>
+  <thead><tr><th>Encargado</th><th>Para qué</th><th>Ubicación de los servidores</th></tr></thead>
+  <tbody>
+    <tr><td>{{ encargados.hosting }}</td><td>Alojar el sitio y la base de datos</td><td>{{ encargados.hosting_pais }}</td></tr>
+    <tr><td>Meta Platforms (WhatsApp Business)</td><td>Enviar códigos, confirmaciones y recordatorios</td><td>Estados Unidos y otros países</td></tr>
+    {% if encargados.correo %}<tr><td>{{ encargados.correo }}</td><td>Correos de respuesta a solicitudes</td><td>{{ encargados.correo_pais }}</td></tr>{% endif %}
+  </tbody>
+</table></div>
+<p>Estados Unidos está incluido en la lista de países con nivel adecuado de protección de la Circular Externa 005 de 2017 de la SIC. Al aceptar esta política autorizas expresamente esta transmisión internacional para las finalidades indicadas.</p>
+<p>Las autoridades solo recibirán tus datos cuando lo exija la ley o una orden judicial.</p>
+
+<h2>12. Seguridad de la información</h2>
+<ul>
+  <li>Conexión cifrada (HTTPS) y verificación de tu celular por código.</li>
+  <li>El acceso del equipo es con usuario personal y según su rol: un barbero solo ve los clientes que atiende.</li>
+  <li>Registramos quién consulta los datos de clientes.</li>
+  <li>Las fotos son privadas y no tienen enlaces públicos.</li>
+  <li>Limitamos los intentos de ingreso y hacemos copias de seguridad.</li>
+</ul>
+<p>Si ocurre un incidente que afecte tus datos, lo informaremos a la SIC según sus instrucciones y te avisaremos cuando corresponda.</p>
+
+<h2>13. Conservación y vigencia de la base de datos</h2>
+<ul>
+  <li>Datos de clientes: mientras uses el servicio. Si pasan <strong>3 años</strong> sin visitas ni citas, los anonimizamos de forma automática.</li>
+  <li>Fotografías: se eliminan después de <strong>1 año</strong> sin visitas, o antes si revocas la autorización.</li>
+  <li>Códigos de verificación: 30 días. Registro de mensajes enviados: 1 año. Bitácora de accesos: 2 años.</li>
+  <li>Soportes contables de servicios y pagos (sin datos personales si pediste la supresión) y prueba de autorizaciones y de solicitudes atendidas: por el término que exijan las normas comerciales y tributarias.</li>
+</ul>
+<p>La base de datos estará vigente mientras {{ RESP_NOMBRE }} desarrolle su actividad comercial.</p>
+
+<h2>14. Mensajes publicitarios</h2>
+<p>Solo te enviaremos publicidad si la autorizas aparte. Cumplimos la Ley 2300 de 2023:</p>
+<ul>
+  <li>Usamos únicamente los canales que autorizaste.</li>
+  <li>Enviamos de lunes a viernes de 7:00 a. m. a 7:00 p. m. y sábados de 8:00 a. m. a 3:00 p. m., nunca domingos ni festivos.</li>
+  <li>No enviamos más de un mensaje publicitario por semana.</li>
+  <li>Cada mensaje trae un enlace para darte de baja.</li>
+</ul>
+<p>Los mensajes del servicio, como confirmaciones y recordatorios de una cita que reservaste, no son publicidad.</p>
+
+<h2>15. Cookies</h2>
+<p>Solo usamos cookies estrictamente necesarias para el funcionamiento y la seguridad del sitio. No usamos cookies de analítica ni de publicidad. Más detalles en la <a href="{% url 'legal:cookies' %}">política de cookies</a>.</p>
+
+<h2>16. Cambios a esta política</h2>
+<p>Si cambiamos sustancialmente esta política, por ejemplo en la identificación del responsable o en las finalidades, te lo informaremos por el sitio o por tus canales de contacto antes de aplicar los cambios. Si cambian las finalidades, te pediremos una nueva autorización. La próxima vez que ingreses verás la nueva versión para aceptarla.</p>
+<p class="text-sm">Versión {{ POLITICA_VERSION }}. Entra en vigencia el {{ POLITICA_VIGENCIA|date:"d/m/Y" }}.</p>
+{% endblock %}

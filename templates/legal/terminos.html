@@ -1,0 +1,73 @@
+{% extends "legal/base_legal.html" %}
+{% block titulo %}Términos y condiciones · {{ RESP_NOMBRE }}{% endblock %}
+{% block documento %}
+<h1>Términos y condiciones del servicio</h1>
+<p class="text-sm">Versión {{ TERMINOS_VERSION }} · Vigente desde el {{ POLITICA_VIGENCIA|date:"d/m/Y" }}</p>
+
+<p>Estos términos regulan el uso del sitio de reservas de {{ RESP_NOMBRE }} y la prestación de nuestros servicios de barbería. Al reservar declaras que los leíste y los aceptas. Se rigen por la Ley 1480 de 2011 (Estatuto del Consumidor), la Ley 527 de 1999 (comercio electrónico) y demás normas colombianas.</p>
+
+<h2>1. Quiénes somos</h2>
+<div class="tabla"><table>
+  <tr><th>Prestador</th><td>{{ RESP.RAZON_SOCIAL|default:"[COMPLETAR]" }}</td></tr>
+  <tr><th>Identificación</th><td>{{ RESP.TIPO_ID }} {{ RESP.NUMERO_ID|default:"[COMPLETAR]" }}</td></tr>
+  {% if RESP.MATRICULA_MERCANTIL %}<tr><th>Matrícula mercantil</th><td>{{ RESP.MATRICULA_MERCANTIL }}</td></tr>{% endif %}
+  <tr><th>Dirección del establecimiento</th><td>{{ RESP.DIRECCION }}</td></tr>
+  <tr><th>Teléfono / WhatsApp</th><td>{{ RESP.TELEFONO }}</td></tr>
+  <tr><th>Correo</th><td>{{ RESP.EMAIL_DATOS|default:"[COMPLETAR]" }}</td></tr>
+  <tr><th>Horario de atención</th><td>{{ NEGOCIO.HORARIO_ATENCION }}</td></tr>
+</table></div>
+
+<h2>2. Qué ofrece este sitio</h2>
+<p>El sitio permite consultar servicios, precios y disponibilidad de horarios, y reservar una cita. Reservar no tiene costo. <strong>No se cobra nada en línea</strong>: el servicio se paga en el establecimiento al recibirlo.</p>
+
+<h2>3. Servicios y precios</h2>
+<ul>
+  <li>Cada servicio muestra su precio total en pesos colombianos (COP) y su duración aproximada. El precio incluye los impuestos aplicables. Si el establecimiento es responsable del IVA, el impuesto está incluido en el valor publicado.</li>
+  <li>El precio que se cobra es el publicado al momento de reservar. Antes de confirmar verás un resumen con los servicios, el barbero, la fecha, la hora y el total.</li>
+  <li>Medios de pago en el local: {{ NEGOCIO.MEDIOS_PAGO }}.</li>
+  <li>Las fotos e ilustraciones de los servicios son de referencia. El resultado depende de tu tipo de cabello.</li>
+</ul>
+
+<h2>4. Reservas</h2>
+<ul>
+  <li>Para reservar debes ser mayor de 18 años y dar datos veraces. Verificamos tu celular con un código.</li>
+  <li>Mientras completas la reserva te guardamos el horario por {{ NEGOCIO.RETENCION_MIN }} minutos. La reserva queda hecha cuando ves la pantalla de confirmación y recibes el mensaje por WhatsApp.</li>
+  <li>Si eliges «cualquier barbero disponible», asignamos al barbero con disponibilidad en el horario que elegiste y te mostramos su nombre antes de confirmar.</li>
+  <li>Si reservas un servicio para un menor de edad, lo haces como su representante. El menor debe asistir acompañado de un adulto.</li>
+</ul>
+
+<h2>5. Puntualidad, cancelación y reprogramación</h2>
+<ul>
+  <li>Puedes cancelar o reprogramar sin costo hasta {{ NEGOCIO.CANCELACION_HORAS }} horas antes de tu cita, desde «Mis citas» o desde el enlace de tus recordatorios.</li>
+  <li>Te esperamos hasta {{ NEGOCIO.TOLERANCIA_LLEGADA_MIN }} minutos después de la hora reservada. Si llegas más tarde, te atenderemos si la agenda lo permite o te ofreceremos otro horario.</li>
+  <li>Si faltas sin avisar en {{ NEGOCIO.NO_SHOWS_CONFIRMACION }} o más ocasiones, podremos pedirte que confirmes por teléfono tus siguientes reservas. No cobramos penalidades por inasistencia.</li>
+  <li>Si por fuerza mayor o por ausencia del barbero no podemos atenderte, te avisaremos lo antes posible y te ofreceremos otro horario u otro barbero.</li>
+</ul>
+
+<h2>6. Garantía del servicio</h2>
+<p>Si el servicio no cumple con lo acordado, avísanos dentro de los {{ NEGOCIO.GARANTIA_DIAS }} días calendario siguientes y lo corregiremos sin costo (artículo 7 de la Ley 1480 de 2011). La garantía no cubre cambios de estilo posteriores a lo solicitado.</p>
+
+<h2>7. Derecho de retracto</h2>
+<p>Como no hay pago en línea, la reserva puede cancelarse sin costo según el numeral 5, lo cual cubre el retracto del artículo 47 de la Ley 1480 de 2011. Los servicios ya prestados no admiten retracto por su naturaleza.</p>
+
+<h2>8. Programa de puntos</h2>
+<ul>
+  <li>Ganas {{ NEGOCIO.PUNTOS_POR_MIL }} punto por cada $1.000 pagados en servicios, y {{ NEGOCIO.PUNTOS_BIENVENIDA }} puntos de bienvenida en tu primera reserva.</li>
+  <li>Los puntos se canjean en el establecimiento por las recompensas publicadas en «Mis puntos». No son canjeables por dinero, no son transferibles y se pierden si eliminas tu cuenta.</li>
+  <li>Los puntos no vencen mientras tu cuenta esté activa.</li>
+  <li>Podemos modificar o terminar el programa avisándote con al menos 30 días de anticipación. Respetaremos los puntos acumulados durante ese periodo (artículo 33 de la Ley 1480 de 2011).</li>
+</ul>
+
+<h2>9. Mensajes</h2>
+<p>Te enviaremos los mensajes necesarios del servicio: código, confirmación, recordatorios y cambios. La publicidad solo te llegará si la autorizas aparte, según nuestra <a href="{% url 'legal:privacidad' %}">Política de Tratamiento de Datos Personales</a> y la Ley 2300 de 2023.</p>
+
+<h2>10. Uso adecuado del sitio</h2>
+<p>No está permitido hacer reservas falsas o masivas, suplantar a otra persona ni intentar acceder a información de otros clientes. Podemos cancelar las reservas que incumplan estas reglas.</p>
+
+<h2>11. Peticiones, quejas y reclamos</h2>
+<p>Puedes escribirnos a {{ RESP.EMAIL_DATOS|default:"[COMPLETAR]" }}, llamarnos al {{ RESP.TELEFONO }} o acercarte al establecimiento. Respondemos en un máximo de 15 días hábiles. Si no estás satisfecho, puedes acudir a la <a href="https://www.sic.gov.co" target="_blank" rel="noopener">Superintendencia de Industria y Comercio</a>.</p>
+<p>Las solicitudes sobre tus datos personales se tramitan por el procedimiento de la <a href="{% url 'legal:privacidad' %}">política de datos</a>.</p>
+
+<h2>12. Cambios y ley aplicable</h2>
+<p>Podemos actualizar estos términos. La versión vigente estará siempre publicada aquí, con su fecha, y se aplica a las reservas hechas después de su publicación. Estos términos se rigen por la ley colombiana.</p>
+{% endblock %}

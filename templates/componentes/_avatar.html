@@ -1,0 +1,1 @@
+{% if b.foto_url %}<img src="{{ b.foto_url }}" alt="{{ b.nombre }}" class="{{ size|default:'h-12 w-12' }} flex-none rounded-full object-cover ring-2 ring-carbon-600">{% else %}<span class="{{ size|default:'h-12 w-12' }} flex flex-none items-center justify-center rounded-full bg-cuero-600 font-semibold text-marfil-50 ring-2 ring-carbon-600">{{ b.iniciales }}</span>{% endif %}

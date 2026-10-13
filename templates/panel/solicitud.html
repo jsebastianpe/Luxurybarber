@@ -1,0 +1,74 @@
+{% extends "panel/base.html" %}
+{% block titulo %}{{ s.radicado }}{% endblock %}
+{% block encabezado %}<a href="{% url 'panel:solicitudes' %}" class="font-normal text-piedra-500">Datos personales /</a> {{ s.radicado }}{% endblock %}
+{% block contenido %}
+<div class="grid gap-6 lg:grid-cols-[1fr_380px]">
+  <section class="space-y-4">
+    <div class="rounded-card border border-marfil-100 bg-white p-5">
+      <div class="flex flex-wrap items-center gap-2">
+        <h2 class="mr-auto text-lg font-semibold">{{ s.get_tipo_display }}</h2>
+        <span class="rounded-full bg-marfil-100 px-3 py-1 text-sm">{{ s.get_estado_display }}</span>
+      </div>
+      <dl class="mt-4 grid gap-x-6 gap-y-2 text-sm sm:grid-cols-2">
+        <div><dt class="text-piedra-500">Solicitante</dt><dd>{{ s.nombre }} · {{ s.get_calidad_display }}</dd></div>
+        <div><dt class="text-piedra-500">Documento</dt><dd>{{ s.tipo_documento }} {{ s.documento }}</dd></div>
+        <div><dt class="text-piedra-500">Celular</dt><dd>{{ s.telefono }}</dd></div>
+        <div><dt class="text-piedra-500">Correo</dt><dd>{{ s.email }}</dd></div>
+        <div><dt class="text-piedra-500">Recibida</dt><dd>{{ s.recibida_en|date:"d/m/Y H:i" }}</dd></div>
+        <div><dt class="text-piedra-500">Fecha límite</dt><dd class="font-semibold">{{ s.fecha_limite|date:"d/m/Y" }} ({{ s.dias_restantes }} días hábiles){% if s.prorroga_hasta %} · prorrogada{% endif %}</dd></div>
+        <div><dt class="text-piedra-500">Identidad</dt><dd class="{% if s.identidad_verificada %}text-salvia{% else %}text-[#8a6212]{% endif %}">{% if s.identidad_verificada %}Verificada{% else %}Sin verificar{% endif %}</dd></div>
+        <div><dt class="text-piedra-500">Cliente asociado</dt><dd>{% if s.cliente %}<a href="{% url 'panel:cliente_ficha' s.cliente_id %}" class="text-laton-700 underline">{{ s.cliente.nombre }}</a>{% else %}No encontrado con ese celular{% endif %}</dd></div>
+      </dl>
+      <h3 class="mt-5 text-sm font-semibold uppercase tracking-wider text-piedra-500">Descripción</h3>
+      <p class="mt-1 whitespace-pre-line text-sm">{{ s.descripcion }}</p>
+      {% if s.adjunto %}<p class="mt-3 text-sm"><a href="{% url 'legal:adjunto_solicitud' s.pk %}" target="_blank" class="text-laton-700 underline">Ver documento adjunto</a></p>{% endif %}
+      {% if s.motivo_prorroga %}<p class="mt-3 text-sm text-piedra-500">Motivo de la prórroga: {{ s.motivo_prorroga }}</p>{% endif %}
+    </div>
+    {% if s.respuesta %}
+    <div class="rounded-card border border-salvia/40 bg-white p-5 text-sm">
+      <h3 class="font-semibold">Respuesta enviada el {{ s.respondida_en|date:"d/m/Y H:i" }}{% if s.atendida_por %} por {{ s.atendida_por.get_full_name|default:s.atendida_por.username }}{% endif %}</h3>
+      <p class="mt-2 whitespace-pre-line">{{ s.respuesta }}</p>
+    </div>
+    {% endif %}
+    <div class="rounded-card border border-marfil-100 bg-white p-5 text-sm text-piedra-500">
+      <h3 class="font-semibold text-carbon-950">Guía rápida</h3>
+      <ol class="mt-2 list-decimal space-y-1 pl-5">
+        <li>Verifica la identidad: el celular coincide con el registrado y el nombre con el documento. Si actúa un tercero, revisa el soporte adjunto.</li>
+        <li>Si falta información, usa «Pedir información» dentro de los 5 días siguientes a recibir la solicitud.</li>
+        <li><strong>Consulta:</strong> descarga los datos del titular y adjúntalos a tu respuesta.</li>
+        <li><strong>Supresión o revocatoria:</strong> ejecuta la acción y luego responde explicando qué se borró y qué se conserva por obligación legal.</li>
+        <li><strong>Actualización o rectificación:</strong> corrige la ficha del cliente y luego responde.</li>
+      </ol>
+    </div>
+  </section>
+
+  <aside class="space-y-4">
+    {% if s.estado != "resuelta" and s.estado != "desistida" %}
+    <form method="post" class="space-y-2 rounded-card border border-marfil-100 bg-white p-5">{% csrf_token %}
+      <h3 class="font-semibold">Acciones sobre los datos</h3>
+      {% if not s.identidad_verificada %}<button name="accion" value="verificar" class="h-10 w-full rounded-lg border border-carbon-950 text-sm">Marcar identidad verificada</button>{% endif %}
+      {% if s.cliente and s.identidad_verificada %}
+      <a href="{% url 'panel:solicitud_exportar' s.pk %}" class="flex h-10 items-center justify-center rounded-lg border border-carbon-950 text-sm">Descargar datos del titular</a>
+      {% if s.tipo == "revocatoria" or s.tipo == "supresion" %}
+      <button name="accion" value="revocar" onclick="return confirm('¿Revocar publicidad y fotografías?')" class="h-10 w-full rounded-lg border border-poste/50 text-sm text-poste">Revocar autorizaciones opcionales</button>
+      {% endif %}
+      {% if s.tipo == "supresion" or s.tipo == "revocatoria" %}
+      <button name="accion" value="suprimir" onclick="return confirm('Se borrarán los datos personales del titular. ¿Continuar?')" class="h-10 w-full rounded-lg bg-poste text-sm font-semibold text-marfil-50">Suprimir datos del titular</button>
+      {% endif %}
+      {% endif %}
+    </form>
+    <form method="post" class="space-y-2 rounded-card border border-marfil-100 bg-white p-5" x-data="{ accion: 'responder' }">{% csrf_token %}
+      <h3 class="font-semibold">Comunicar al titular</h3>
+      <select name="accion" x-model="accion" class="h-10 w-full rounded-lg border-marfil-100 text-sm">
+        <option value="responder">Responder y cerrar</option>
+        {% if s.estado == "incompleta" %}<option value="reactivar">El titular completó la información</option>{% else %}<option value="requerir">Pedir información (reclamo incompleto)</option>{% endif %}
+        {% if not s.prorroga_hasta %}<option value="prorrogar">Prorrogar plazo (informar motivo)</option>{% endif %}
+      </select>
+      <textarea name="texto" rows="6" x-show="accion !== 'reactivar'" class="w-full rounded-lg border-marfil-100 text-sm" placeholder="Texto que recibirá el titular por correo"></textarea>
+      <button class="h-10 w-full rounded-lg bg-laton-500 text-sm font-semibold text-carbon-950">Enviar</button>
+      <p class="text-xs text-piedra-500">Se envía a {{ s.email }} y queda registrado.</p>
+    </form>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

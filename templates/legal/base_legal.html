@@ -1,0 +1,17 @@
+{% extends "cliente/base.html" %}
+{% block contenido %}
+<article class="legal mx-auto max-w-3xl">
+  <nav class="mb-6 flex flex-wrap gap-2 text-sm" aria-label="Documentos legales">
+    <a href="{% url 'legal:privacidad' %}" class="rounded-full px-3 py-1 {% if doc == 'privacidad' %}bg-laton-500 text-carbon-950{% else %}bg-carbon-800 text-piedra-400{% endif %}">Política de datos</a>
+    <a href="{% url 'legal:terminos' %}" class="rounded-full px-3 py-1 {% if doc == 'terminos' %}bg-laton-500 text-carbon-950{% else %}bg-carbon-800 text-piedra-400{% endif %}">Términos y condiciones</a>
+    <a href="{% url 'legal:cookies' %}" class="rounded-full px-3 py-1 {% if doc == 'cookies' %}bg-laton-500 text-carbon-950{% else %}bg-carbon-800 text-piedra-400{% endif %}">Cookies</a>
+    <a href="{% url 'legal:derechos' %}" class="rounded-full px-3 py-1 {% if doc == 'derechos' %}bg-laton-500 text-carbon-950{% else %}bg-carbon-800 text-piedra-400{% endif %}">Ejercer mis derechos</a>
+  </nav>
+  {% if faltantes %}
+  <div class="mb-6 rounded-card border border-ambar/60 bg-ambar/10 p-4 text-sm" role="alert">
+    <strong>Configuración incompleta:</strong> faltan {{ faltantes|join:", " }} del responsable. Complétalos en el archivo <code>.env</code> antes de publicar el sitio.
+  </div>
+  {% endif %}
+  {% block documento %}{% endblock %}
+</article>
+{% endblock %}

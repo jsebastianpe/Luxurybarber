@@ -1,0 +1,18 @@
+{% extends "legal/base_legal.html" %}
+{% block titulo %}Política de cookies · {{ RESP_NOMBRE }}{% endblock %}
+{% block documento %}
+<h1>Política de cookies</h1>
+<p>Este sitio <strong>solo usa cookies estrictamente necesarias</strong>. No usamos cookies de analítica, de publicidad ni de redes sociales, y no compartimos información de tu navegación con terceros. Las fuentes tipográficas también se cargan desde nuestro propio servidor, sin conexiones a Google ni a otros servicios externos.</p>
+
+<div class="tabla"><table>
+  <thead><tr><th>Nombre</th><th>Para qué sirve</th><th>Duración</th></tr></thead>
+  <tbody>
+    <tr><td><code>sessionid</code></td><td>Mantener tu sesión, guardar la reserva que estás haciendo y recordar que verificaste tu celular.</td><td>30 días, o hasta que cierres sesión</td></tr>
+    <tr><td><code>csrftoken</code></td><td>Proteger los formularios contra ataques de falsificación de solicitudes.</td><td>1 año</td></tr>
+  </tbody>
+</table></div>
+<p>Además guardamos en tu navegador (almacenamiento local, no cookie) un indicador de que ya viste el aviso de cookies. No contiene datos personales.</p>
+<p>Estas cookies son indispensables para que el sitio funcione. Puedes bloquearlas o borrarlas desde la configuración de tu navegador, pero en ese caso no podrás reservar.</p>
+<p>Los enlaces a Google Maps o WhatsApp te llevan a servicios de terceros, que tienen sus propias políticas.</p>
+<p>Si en el futuro usamos cookies distintas, por ejemplo de analítica, actualizaremos esta política y te pediremos tu consentimiento antes de activarlas.</p>
+{% endblock %}

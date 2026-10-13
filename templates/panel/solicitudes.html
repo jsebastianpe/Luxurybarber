@@ -1,0 +1,45 @@
+{% extends "panel/base.html" %}
+{% block titulo %}Datos personales{% endblock %}
+{% block encabezado %}Datos personales · Consultas y reclamos{% endblock %}
+{% block acciones %}<a href="{% url 'panel:bitacora' %}" class="h-10 rounded-lg border border-carbon-950 px-4 text-sm leading-10">Bitácora de accesos</a>{% endblock %}
+{% block contenido %}
+{% if faltantes %}
+<div class="mb-4 rounded-card border border-poste/40 bg-poste/5 px-5 py-3 text-sm" role="alert">
+  <strong>Antes de lanzar:</strong> faltan datos del responsable ({{ faltantes|join:", " }}). Sin ellos la política no cumple el contenido mínimo legal.
+</div>
+{% endif %}
+<p class="mb-4 max-w-3xl text-sm text-piedra-500">Plazos de la Ley 1581 de 2012 en días hábiles, sin contar sábados, domingos ni festivos. Consultas: 10 días, prorrogables 5. Reclamos: 15 días, prorrogables 8. Si un reclamo está incompleto, pídelo dentro de los 5 días siguientes a recibirlo.</p>
+<div class="mb-4 flex flex-wrap gap-2 text-sm">
+  <a href="?estado=abiertas" class="h-9 rounded-full px-4 leading-9 {% if estado == 'abiertas' %}bg-carbon-950 text-marfil-50{% else %}bg-white{% endif %}">Abiertas</a>
+  {% for v, n in estados %}<a href="?estado={{ v }}" class="h-9 rounded-full px-4 leading-9 {% if estado == v %}bg-carbon-950 text-marfil-50{% else %}bg-white{% endif %}">{{ n }}</a>{% endfor %}
+  <a href="?estado=todas" class="h-9 rounded-full px-4 leading-9 {% if estado == 'todas' %}bg-carbon-950 text-marfil-50{% else %}bg-white{% endif %}">Todas</a>
+</div>
+<div class="overflow-x-auto rounded-card border border-marfil-100 bg-white">
+  <table class="w-full text-sm">
+    <thead class="bg-marfil-50 text-left text-xs uppercase tracking-wider text-piedra-500">
+      <tr><th class="px-4 py-3">Radicado</th><th class="px-3 py-3">Tipo</th><th class="px-3 py-3">Titular</th><th class="px-3 py-3">Recibida</th><th class="px-3 py-3">Vence</th><th class="px-3 py-3">Estado</th></tr>
+    </thead>
+    <tbody class="divide-y divide-marfil-100">
+      {% for s in solicitudes %}
+      {% with d=s.dias_restantes %}
+      <tr class="hover:bg-marfil-50">
+        <td class="px-4 py-3"><a href="{% url 'panel:solicitud' s.pk %}" class="font-medium tabular hover:underline">{{ s.radicado }}</a></td>
+        <td class="px-3 py-3">{{ s.get_tipo_display }}</td>
+        <td class="px-3 py-3">{{ s.nombre }}{% if not s.identidad_verificada %} <span class="text-xs text-ambar">· sin verificar</span>{% endif %}</td>
+        <td class="px-3 py-3 tabular text-piedra-500">{{ s.recibida_en|date:"d/m/Y" }}</td>
+        <td class="px-3 py-3 tabular">
+          {{ s.fecha_limite|date:"d/m/Y" }}
+          {% if s.estado in "recibida en_tramite prorrogada" %}
+          <span class="ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold {% if d < 0 %}bg-poste/15 text-poste{% elif d <= 2 %}bg-ambar/15 text-[#8a6212]{% else %}bg-salvia/15 text-salvia{% endif %}">{% if d < 0 %}vencida hace {{ d|abs }} d hábiles{% else %}{{ d }} d hábiles{% endif %}</span>
+          {% endif %}
+        </td>
+        <td class="px-3 py-3">{{ s.get_estado_display }}</td>
+      </tr>
+      {% endwith %}
+      {% empty %}
+      <tr><td colspan="6" class="px-4 py-10 text-center text-piedra-500">No hay solicitudes en este estado.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

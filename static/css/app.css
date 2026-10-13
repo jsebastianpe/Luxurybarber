@@ -1,0 +1,55 @@
+/* Complementos a Tailwind: estados, animaciones y utilidades del sistema "Navaja y Cuero" */
+[x-cloak] { display: none !important; }
+.tabular { font-variant-numeric: tabular-nums; }
+
+/* Fuentes locales (sin enviar la IP del visitante a terceros) */
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 400 700; font-display: swap; src: url("../fonts/inter-latin-wght-normal.woff2") format("woff2"); }
+@font-face { font-family: "DM Serif Display"; font-style: normal; font-weight: 400; font-display: swap; src: url("../fonts/dm-serif-display-latin-400-normal.woff2") format("woff2"); }
+
+/* Foco visible accesible (anillo latón con separación) */
+.foco:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid #C9A45C; outline-offset: 2px;
+}
+
+/* Indicadores HTMX */
+.htmx-indicator { opacity: 0; transition: opacity .2s; }
+.htmx-request .htmx-indicator, .htmx-request.htmx-indicator { opacity: 1; }
+
+/* Slots: aparición y salida suave cuando cambian en tiempo real */
+.slot { animation: aparecer .25s ease-out; }
+@keyframes aparecer { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.htmx-swapping .slot { opacity: .3; transition: opacity .3s; }
+
+/* Check animado de éxito */
+.check-anim path { stroke-dasharray: 48; stroke-dashoffset: 48; animation: trazo .4s .1s ease-out forwards; }
+@keyframes trazo { to { stroke-dashoffset: 0; } }
+
+/* Pulso para "En silla" */
+.pulso { animation: pulso 2s ease-in-out infinite; }
+@keyframes pulso { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+
+/* Ocultar barra de scroll en la tira de días sin perder el desplazamiento */
+.sin-scroll { scrollbar-width: none; }
+.sin-scroll::-webkit-scrollbar { display: none; }
+
+/* Patrón para bloqueos en la agenda */
+.tramado { background-image: repeating-linear-gradient(135deg, rgba(122,115,108,.18) 0 6px, transparent 6px 12px); }
+
+/* Documentos legales: tipografía de lectura */
+.legal h1 { font-family: "DM Serif Display", serif; font-size: 2.25rem; line-height: 1.15; }
+.legal h2 { margin-top: 2.25rem; font-size: 1.25rem; font-weight: 600; color: #F7F2EA; }
+.legal h3 { margin-top: 1.25rem; font-weight: 600; color: #F7F2EA; }
+.legal p, .legal li, .legal td, .legal th { color: #C9C1B7; line-height: 1.7; }
+.legal p { margin-top: .75rem; }
+.legal ul, .legal ol { margin-top: .75rem; padding-left: 1.25rem; }
+.legal ul { list-style: disc; } .legal ol { list-style: decimal; }
+.legal li { margin-top: .35rem; }
+.legal a { color: #D7B776; text-decoration: underline; }
+.legal table { width: 100%; margin-top: 1rem; border-collapse: collapse; font-size: .9rem; }
+.legal th { text-align: left; font-weight: 600; color: #F7F2EA; }
+.legal th, .legal td { border-bottom: 1px solid #3A3531; padding: .6rem .5rem; vertical-align: top; }
+.legal .tabla { overflow-x: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

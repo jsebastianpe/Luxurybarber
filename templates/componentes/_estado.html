@@ -1,0 +1,8 @@
+{# Insignia de estado de cita: color + icono + texto (no depende solo del color) #}
+{% if estado == "pendiente" %}<span class="inline-flex items-center gap-1 rounded-full bg-ambar/15 px-2 py-0.5 text-[11px] font-semibold {% if oscuro %}text-ambar{% else %}text-[#8a6212]{% endif %}">◷ Pendiente</span>
+{% elif estado == "confirmada" %}<span class="inline-flex items-center gap-1 rounded-full bg-laton-500/15 px-2 py-0.5 text-[11px] font-semibold {% if oscuro %}text-laton-400{% else %}text-laton-700{% endif %}">✓ Confirmada</span>
+{% elif estado == "en_silla" %}<span class="inline-flex items-center gap-1 rounded-full bg-salvia/15 px-2 py-0.5 text-[11px] font-semibold {% if oscuro %}text-[#8fc4a0]{% else %}text-salvia{% endif %}"><span class="pulso">✂</span> En silla</span>
+{% elif estado == "completada" %}<span class="inline-flex items-center gap-1 rounded-full bg-piedra-400/15 px-2 py-0.5 text-[11px] font-semibold text-piedra-500">✓✓ Completada</span>
+{% elif estado == "no_show" %}<span class="inline-flex items-center gap-1 rounded-full bg-poste/15 px-2 py-0.5 text-[11px] font-semibold {% if oscuro %}text-[#e38a83]{% else %}text-poste{% endif %}">✕ No-show</span>
+{% elif estado == "cancelada" %}<span class="inline-flex items-center gap-1 rounded-full bg-piedra-400/10 px-2 py-0.5 text-[11px] font-semibold text-piedra-500 line-through">⊘ Cancelada</span>
+{% endif %}

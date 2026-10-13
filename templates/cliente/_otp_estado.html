@@ -1,0 +1,9 @@
+{% if whatsapp %}
+<p id="otp-estado" class="mt-1 flex items-center gap-1.5 text-xs" aria-live="polite"
+   {% if reg.estado == "pendiente" or reg.estado == "enviado" %}hx-get="{% url 'cliente:estado_codigo' %}" hx-trigger="every 3s" hx-swap="outerHTML"{% endif %}>
+  {% if reg.estado == "leido" %}<span class="text-[#8fc4a0]">✓✓ Leído en WhatsApp</span>
+  {% elif reg.estado == "entregado" %}<span class="text-[#8fc4a0]">✓✓ Entregado en tu WhatsApp</span>
+  {% elif reg.estado == "fallido" %}<span class="text-[#e38a83]">No pudimos entregarlo. Verifica que el número tenga WhatsApp y vuelve a pedir el código.</span>
+  {% else %}<span class="text-piedra-400">✓ Enviado. Si no te llega en un minuto, revisa el número.</span>{% endif %}
+</p>
+{% endif %}

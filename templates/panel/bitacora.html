@@ -1,0 +1,16 @@
+{% extends "panel/base.html" %}
+{% block titulo %}Bitácora de accesos{% endblock %}
+{% block encabezado %}<a href="{% url 'panel:solicitudes' %}" class="font-normal text-piedra-500">Datos personales /</a> Bitácora de accesos{% endblock %}
+{% block contenido %}
+<p class="mb-4 text-sm text-piedra-500">Registro de quién consultó o modificó datos de clientes en los últimos 2 años. Sirve como prueba de responsabilidad demostrada ante la SIC y para investigar incidentes.</p>
+<div class="overflow-x-auto rounded-card border border-marfil-100 bg-white">
+  <table class="w-full text-sm">
+    <thead class="bg-marfil-50 text-left text-xs uppercase tracking-wider text-piedra-500"><tr><th class="px-4 py-3">Fecha</th><th class="px-3 py-3">Usuario</th><th class="px-3 py-3">Acción</th><th class="px-3 py-3">Cliente</th><th class="px-3 py-3">Detalle</th><th class="px-3 py-3">IP</th></tr></thead>
+    <tbody class="divide-y divide-marfil-100">
+      {% for r in registros %}
+      <tr><td class="px-4 py-2 tabular text-piedra-500">{{ r.fecha|date:"d/m/Y H:i" }}</td><td class="px-3 py-2">{{ r.usuario.username|default:"—" }}</td><td class="px-3 py-2">{{ r.accion }}</td><td class="px-3 py-2">{{ r.cliente.nombre|default:"—" }}</td><td class="px-3 py-2 text-piedra-500">{{ r.detalle }}</td><td class="px-3 py-2 tabular text-piedra-500">{{ r.ip|default:"" }}</td></tr>
+      {% empty %}<tr><td colspan="6" class="px-4 py-8 text-center text-piedra-500">Sin registros.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

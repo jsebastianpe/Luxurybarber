@@ -11,10 +11,15 @@ from django.views.decorators.http import require_POST
 
 from . import disponibilidad as disp
 from . import notificaciones, operaciones as ops
+<<<<<<< HEAD
 from . import privacidad as priv
 from .archivos import validar_archivo
 from .models import (Barbero, Bloqueo, Caja, Cita, Cliente, MensajeEnviado, MovimientoCaja,
                      MovimientoInventario, Producto, Servicio, SolicitudDatos)
+=======
+from .models import (Barbero, Bloqueo, Caja, Cita, Cliente, MensajeEnviado, MovimientoCaja,
+                     MovimientoInventario, Producto, Servicio)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 from .otp import normalizar_telefono
 from .roles import ADMIN, BARBERO, RECEPCION, requiere_rol
 
@@ -56,8 +61,11 @@ def hoy(request):
         "stock_bajo": Producto.objects.filter(activo=True, stock__lte=F("stock_minimo"))[:6] if request.rol != BARBERO else [],
         "cumpleanos": Cliente.objects.filter(fecha_nacimiento__month=d.month, fecha_nacimiento__day=d.day)[:5],
         "caja": caja,
+<<<<<<< HEAD
         "solicitudes_abiertas": (SolicitudDatos.objects.filter(estado__in=SolicitudDatos.ABIERTAS).order_by("vence_en")[:5]
                                  if request.rol == ADMIN else []),
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         "nav": "hoy",
     })
 
@@ -114,7 +122,10 @@ def cita_panel(request, pk):
     propio = _barbero_propio(request)
     if propio and cita.barbero_id != propio.id:
         return HttpResponse(status=403)
+<<<<<<< HEAD
     priv.auditar(request, "ver_cita", cita.cliente, f"cita {cita.pk}")
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     return render(request, "panel/_cita_panel.html", {
         "cita": cita, "c": cita.cliente, "medios": MovimientoCaja.MEDIOS, "caja": ops.caja_abierta(),
         "historial": cita.cliente.citas.filter(estado=Cita.COMPLETADA).exclude(pk=cita.pk).order_by("-inicio")[:3],
@@ -178,6 +189,7 @@ def cita_nueva(request):
     if not (telefono and nombre and servicios and barbero and inicio):
         messages.error(request, "Completa nombre, celular válido, servicios, barbero y hora.")
         return redirect(request.POST.get("next") or "panel:agenda")
+<<<<<<< HEAD
     cliente = Cliente.objects.filter(telefono=telefono).first()
     if cliente is None or cliente.requiere_reaceptar:
         # Autorización verbal o presencial: el equipo debe obtenerla y queda registrada (Decreto 1074, 2.2.2.25.2.4)
@@ -189,6 +201,9 @@ def cita_nueva(request):
             cliente = Cliente.objects.create(telefono=telefono, nombre=nombre)
         priv.aplicar_autorizaciones(cliente, sensibles=False, marketing=bool(request.POST.get("marketing_presencial")),
                                     request=request, canal="presencial", usuario=request.user)
+=======
+    cliente, _ = Cliente.objects.get_or_create(telefono=telefono, defaults={"nombre": nombre})
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     walkin = request.POST.get("walkin") == "1"
     try:
         cita = disp.crear_cita(cliente=cliente, barbero=barbero, servicios=servicios, inicio=inicio,
@@ -235,8 +250,12 @@ def bloqueo_borrar(request, pk):
 def clientes(request):
     q = request.GET.get("q", "").strip()
     filtro = request.GET.get("filtro", "")
+<<<<<<< HEAD
     qs = Cliente.objects.filter(anonimizado_en__isnull=True).annotate(
         visitas=Count("citas", filter=Q(citas__estado=Cita.COMPLETADA)))
+=======
+    qs = Cliente.objects.annotate(visitas=Count("citas", filter=Q(citas__estado=Cita.COMPLETADA)))
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     propio = _barbero_propio(request)
     if propio:
         qs = qs.filter(citas__barbero=propio).distinct()
@@ -260,13 +279,17 @@ def cliente_ficha(request, pk):
     propio = _barbero_propio(request)
     if propio and not c.citas.filter(barbero=propio).exists():
         return HttpResponse(status=403)
+<<<<<<< HEAD
     if c.anonimizado_en:
         messages.info(request, "Este titular pidió la supresión de sus datos.")
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     if request.method == "POST":
         for campo in ("pref_maquina", "pref_estilo", "pref_barba", "notas"):
             if campo in request.POST:
                 setattr(c, campo, request.POST[campo].strip())
         c.save()
+<<<<<<< HEAD
         priv.auditar(request, "editar_ficha", c)
         foto = request.FILES.get("foto")
         if foto:
@@ -282,6 +305,14 @@ def cliente_ficha(request, pk):
         messages.success(request, "Ficha actualizada.")
         return redirect("panel:cliente_ficha", pk=pk)
     priv.auditar(request, "ver_ficha", c)
+=======
+        if request.FILES.get("foto"):
+            from .models import FotoReferencia
+            FotoReferencia.objects.create(cliente=c, archivo=request.FILES["foto"], es_resultado=True,
+                                          descripcion=request.POST.get("descripcion", "Resultado del corte"))
+        messages.success(request, "Ficha actualizada.")
+        return redirect("panel:cliente_ficha", pk=pk)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     citas = c.citas.select_related("barbero").prefetch_related("servicios").order_by("-inicio")
     gastado = citas.filter(estado=Cita.COMPLETADA).aggregate(t=Sum("precio_total"))["t"] or 0
     return render(request, "panel/cliente_ficha.html", {
@@ -394,7 +425,11 @@ def comisiones(request):
 def marketing(request):
     dias = int(request.GET.get("dias") or CFG["INACTIVO_DIAS"][0])
     limite = timezone.now() - timedelta(days=dias)
+<<<<<<< HEAD
     inactivos = (Cliente.objects.filter(ultima_visita__lt=limite, acepta_marketing=True, anonimizado_en__isnull=True)
+=======
+    inactivos = (Cliente.objects.filter(ultima_visita__lt=limite, acepta_whatsapp=True)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
                  .exclude(citas__inicio__gte=timezone.now(), citas__estado__in=[Cita.PENDIENTE, Cita.CONFIRMADA])
                  .order_by("ultima_visita"))
     plantilla = ("¡{nombre}, te extrañamos! Hace {dias} días no te vemos. Tienes {puntos} puntos esperando. "
@@ -402,6 +437,7 @@ def marketing(request):
     if request.method == "POST":
         ids = request.POST.getlist("clientes")
         texto = request.POST.get("mensaje") or plantilla
+<<<<<<< HEAD
         if not priv.en_horario_publicidad():
             messages.error(request, "Por la Ley 2300 de 2023 solo se puede enviar publicidad de lunes a viernes de 7:00 a. m. "
                                     "a 7:00 p. m. y sábados de 8:00 a. m. a 3:00 p. m. (nunca domingos ni festivos).")
@@ -423,6 +459,18 @@ def marketing(request):
         "mensajes": MensajeEnviado.objects.select_related("cliente")[:20], "top_puntos": top_puntos,
         "en_horario": priv.en_horario_publicidad(),
         "autorizados": Cliente.objects.filter(acepta_marketing=True, anonimizado_en__isnull=True).count(),
+=======
+        enviados = 0
+        for c in Cliente.objects.filter(id__in=ids):
+            notificaciones.reactivacion(c, texto)
+            enviados += 1
+        messages.success(request, f"Mensaje enviado a {enviados} cliente(s).")
+        return redirect(f"{request.path}?dias={dias}")
+    top_puntos = Cliente.objects.order_by("-puntos")[:8]
+    return render(request, "panel/marketing.html", {
+        "inactivos": inactivos[:100], "dias": dias, "opciones": CFG["INACTIVO_DIAS"], "plantilla": plantilla,
+        "mensajes": MensajeEnviado.objects.select_related("cliente")[:20], "top_puntos": top_puntos,
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         "nav": "marketing",
     })
 
@@ -444,6 +492,7 @@ def reportes(request):
         },
         "nav": "reportes",
     })
+<<<<<<< HEAD
 
 
 # ---------------- Ingreso con límite de intentos ----------------
@@ -583,3 +632,5 @@ def _enviar_correo(s, asunto, cuerpo):
     except Exception:  # noqa: BLE001
         import logging
         logging.getLogger("core").exception("No se pudo enviar el correo de la solicitud %s", s.radicado)
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad

@@ -6,8 +6,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 def env(name, default=None):
+<<<<<<< HEAD
     valor = os.environ.get(name)
     return default if valor in (None, "") else valor
+=======
+    return os.environ.get(name, default)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 
 
 # Carga simple de .env (sin dependencias externas)
@@ -42,7 +46,10 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+<<<<<<< HEAD
     "core.middleware.CabecerasSeguridad",
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -87,10 +94,14 @@ else:
     }
 
 AUTH_PASSWORD_VALIDATORS = [
+<<<<<<< HEAD
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 10}},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
+=======
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 ]
 
 LANGUAGE_CODE = "es-co"
@@ -123,11 +134,14 @@ BARBERIA = {
     "PUNTOS_POR_MIL": 1,            # puntos por cada $1.000 COP pagados
     "PUNTOS_BIENVENIDA": 50,
     "INACTIVO_DIAS": [30, 60, 90],
+<<<<<<< HEAD
     "TOLERANCIA_LLEGADA_MIN": 10,   # minutos de espera antes de liberar la cita (términos y condiciones)
     "GARANTIA_DIAS": 5,             # días calendario para pedir un retoque sin costo
     "NO_SHOWS_CONFIRMACION": 2,     # desde cuántas inasistencias se exige confirmar por teléfono
     "MEDIOS_PAGO": "efectivo, Nequi, Daviplata, transferencia y tarjeta débito o crédito",
     "HORARIO_ATENCION": env("BARBERIA_HORARIO", "Lunes a sábado de 9:00 a. m. a 8:00 p. m."),
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 }
 
 # Tailwind: CSS compilado (static/css/tailwind.css) o CDN para prototipar sin compilar
@@ -135,6 +149,7 @@ TAILWIND_CDN = env("TAILWIND_CDN", "0") == "1"
 
 # Canal de mensajes: "consola" (desarrollo) o "whatsapp" (WhatsApp Cloud API de Meta)
 MENSAJES_BACKEND = env("MENSAJES_BACKEND", "consola")
+<<<<<<< HEAD
 
 # --- WhatsApp Cloud API (Meta) ---
 # Secretos SOLO por variables de entorno o gestor de secretos; nunca en el código ni en la base de datos.
@@ -256,6 +271,12 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", "")
 EMAIL_USE_TLS = env("EMAIL_USE_TLS", "1") == "1"
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", RESPONSABLE["EMAIL_DATOS"] or "no-responder@localhost")
 
+=======
+WHATSAPP_TOKEN = env("WHATSAPP_TOKEN", "")
+WHATSAPP_PHONE_ID = env("WHATSAPP_PHONE_ID", "")
+SITIO_URL = env("SITIO_URL", "http://127.0.0.1:8000")
+
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 LOGGING = {
     "version": 1,
     "handlers": {"console": {"class": "logging.StreamHandler"}},

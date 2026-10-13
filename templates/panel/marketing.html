@@ -8,8 +8,12 @@
       <h2 class="mr-auto font-semibold">Clientes inactivos</h2>
       {% for o in opciones %}<a href="?dias={{ o }}" class="h-9 rounded-full px-3 text-sm leading-9 {% if dias == o %}bg-carbon-950 text-marfil-50{% else %}bg-marfil-50{% endif %}">+{{ o }} días</a>{% endfor %}
     </div>
+<<<<<<< HEAD
     <p class="px-5 pt-3 text-sm text-piedra-500">Solo clientes que <strong>autorizaron publicidad</strong> ({{ autorizados }} en total), sin visita en más de {{ dias }} días y sin cita próxima: {{ inactivos|length }}.</p>
     {% if not en_horario %}<p class="mx-5 mt-3 rounded-lg bg-ambar/10 px-3 py-2 text-sm text-[#8a6212]">Ahora no se puede enviar publicidad (Ley 2300 de 2023): lunes a viernes 7:00 a. m. – 7:00 p. m., sábados 8:00 a. m. – 3:00 p. m., nunca domingos ni festivos.</p>{% endif %}
+=======
+    <p class="px-5 pt-3 text-sm text-piedra-500">Sin visita en más de {{ dias }} días y sin cita próxima. {{ inactivos|length }} cliente(s).</p>
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     <table class="mt-2 w-full text-sm">
       <thead class="text-left text-xs uppercase tracking-wider text-piedra-500"><tr>
         <th class="px-5 py-2"><input type="checkbox" x-model="todos" @change="$root.querySelectorAll('[name=clientes]').forEach(c => c.checked = todos)" class="rounded text-laton-500" aria-label="Seleccionar todos"></th>
@@ -27,8 +31,13 @@
     <div class="space-y-2 border-t border-marfil-100 p-5">
       <label class="block text-sm font-medium">Mensaje de WhatsApp</label>
       <textarea name="mensaje" rows="3" class="w-full rounded-lg border-marfil-100 text-sm">{{ plantilla }}</textarea>
+<<<<<<< HEAD
       <p class="text-xs text-piedra-500">Variables: {nombre}, {dias}, {puntos}, {enlace}. Al final se agrega automáticamente el enlace para darse de baja. Máximo un mensaje publicitario por cliente cada 7 días.</p>
       <button {% if not en_horario %}disabled{% endif %} class="h-11 rounded-lg bg-laton-500 px-6 text-sm font-semibold text-carbon-950 disabled:opacity-40">Enviar a seleccionados</button>
+=======
+      <p class="text-xs text-piedra-500">Variables: {nombre}, {dias}, {puntos}, {enlace}</p>
+      <button class="h-11 rounded-lg bg-laton-500 px-6 text-sm font-semibold text-carbon-950">Enviar a seleccionados</button>
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     </div>
   </form>
 

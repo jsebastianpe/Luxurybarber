@@ -25,25 +25,41 @@
       <option value="">Sin preferencia</option>
       {% for b in barberos %}<option value="{{ b.id }}" {% if cliente.barbero_preferido_id == b.id %}selected{% endif %}>{{ b.nombre }}</option>{% endfor %}
     </select></label>
+<<<<<<< HEAD
+=======
+  <label class="flex items-center gap-3 text-sm md:col-span-2">
+    <input type="checkbox" name="acepta_whatsapp" {% if cliente.acepta_whatsapp %}checked{% endif %} class="h-5 w-5 rounded border-carbon-600 bg-carbon-800 text-laton-500 focus:ring-laton-500">
+    <span class="text-piedra-400">Recibir recordatorios y promociones por WhatsApp</span></label>
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
   <div class="md:col-span-2"><button class="h-12 rounded-lg bg-laton-500 px-8 font-semibold text-carbon-950 hover:bg-laton-400">Guardar preferencias</button></div>
 </form>
 
 <section class="mt-12">
   <h2 class="text-lg font-semibold">Mis fotos de referencia y cortes</h2>
+<<<<<<< HEAD
   {% if not cliente.acepta_sensibles %}
   <p class="mt-2 text-sm text-piedra-400">Para guardar fotos necesitas autorizarlo en <a href="#mis-datos" class="text-laton-400 underline">Mis datos</a>. Es opcional.</p>
   {% else %}
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
   <form method="post" enctype="multipart/form-data" class="mt-4 flex flex-wrap items-center gap-3">
     {% csrf_token %}
     <input type="file" name="foto" accept="image/*" required class="text-sm text-piedra-400 file:mr-3 file:h-10 file:rounded-lg file:border-0 file:bg-carbon-700 file:px-4 file:text-marfil-50">
     <input name="descripcion" placeholder="Descripción (opcional)" class="h-10 rounded-lg border-carbon-600 bg-carbon-800 text-sm text-marfil-50 placeholder-piedra-500">
     <button class="h-10 rounded-lg border-[1.5px] border-laton-500 px-4 text-sm text-laton-400">Subir</button>
   </form>
+<<<<<<< HEAD
   {% endif %}
   <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
     {% for f in cliente.fotos.all %}
     <figure class="group relative overflow-hidden rounded-card border border-carbon-600">
       <img src="{% url 'legal:foto' f.pk %}" alt="{{ f.descripcion }}" class="aspect-square w-full object-cover">
+=======
+  <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+    {% for f in cliente.fotos.all %}
+    <figure class="group relative overflow-hidden rounded-card border border-carbon-600">
+      <img src="{{ f.archivo.url }}" alt="{{ f.descripcion }}" class="aspect-square w-full object-cover">
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
       <figcaption class="absolute inset-x-0 bottom-0 bg-carbon-950/80 px-2 py-1 text-[11px]">{% if f.es_resultado %}Resultado{% else %}Referencia{% endif %}{% if f.descripcion %} · {{ f.descripcion }}{% endif %}</figcaption>
       {% if not f.es_resultado %}
       <form method="post" action="{% url 'cliente:borrar_foto' f.pk %}" class="absolute right-1 top-1">{% csrf_token %}<button class="rounded-full bg-carbon-950/80 px-2 text-xs" aria-label="Eliminar foto">✕</button></form>
@@ -54,6 +70,7 @@
     {% endfor %}
   </div>
 </section>
+<<<<<<< HEAD
 <section id="mis-datos" class="mt-12 scroll-mt-24 rounded-card border border-carbon-600 bg-carbon-800 p-5">
   <h2 class="text-lg font-semibold">Mis datos y autorizaciones</h2>
   <p class="mt-1 text-sm text-piedra-400">Aceptaste la <a href="{% url 'legal:privacidad' %}" class="text-laton-400 underline">política de datos</a> versión {{ cliente.politica_version }}{% if cliente.autorizado_en %} el {{ cliente.autorizado_en|date:"d/m/Y" }}{% endif %}. Puedes cambiar estas autorizaciones cuando quieras.</p>
@@ -93,4 +110,7 @@
   </div>
 </section>
 <p class="mt-8"><a href="{% url 'cliente:salir' %}" class="text-sm text-piedra-400 underline">Cerrar sesión</a></p>
+=======
+<p class="mt-12"><a href="{% url 'cliente:salir' %}" class="text-sm text-piedra-400 underline">Cerrar sesión</a></p>
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 {% endblock %}

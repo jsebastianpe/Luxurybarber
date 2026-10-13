@@ -2,10 +2,13 @@
 [x-cloak] { display: none !important; }
 .tabular { font-variant-numeric: tabular-nums; }
 
+<<<<<<< HEAD
 /* Fuentes locales (sin enviar la IP del visitante a terceros) */
 @font-face { font-family: "Inter"; font-style: normal; font-weight: 400 700; font-display: swap; src: url("../fonts/inter-latin-wght-normal.woff2") format("woff2"); }
 @font-face { font-family: "DM Serif Display"; font-style: normal; font-weight: 400; font-display: swap; src: url("../fonts/dm-serif-display-latin-400-normal.woff2") format("woff2"); }
 
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 /* Foco visible accesible (anillo latón con separación) */
 .foco:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: 2px solid #C9A45C; outline-offset: 2px;
@@ -35,6 +38,7 @@
 /* Patrón para bloqueos en la agenda */
 .tramado { background-image: repeating-linear-gradient(135deg, rgba(122,115,108,.18) 0 6px, transparent 6px 12px); }
 
+<<<<<<< HEAD
 /* Documentos legales: tipografía de lectura */
 .legal h1 { font-family: "DM Serif Display", serif; font-size: 2.25rem; line-height: 1.15; }
 .legal h2 { margin-top: 2.25rem; font-size: 1.25rem; font-weight: 600; color: #F7F2EA; }
@@ -50,6 +54,8 @@
 .legal th, .legal td { border-bottom: 1px solid #3A3531; padding: .6rem .5rem; vertical-align: top; }
 .legal .tabla { overflow-x: auto; }
 
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }

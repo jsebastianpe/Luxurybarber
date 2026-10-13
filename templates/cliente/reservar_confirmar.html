@@ -58,7 +58,10 @@
         {% endif %}
       </div>
       {% if errores.telefono %}<p class="mt-1 text-sm text-[#e38a83]">{{ errores.telefono }}</p>{% endif %}
+<<<<<<< HEAD
       {% if not cliente %}<p class="mt-1 text-xs text-piedra-500">Usaremos tu celular solo para verificar que es tuyo y para los mensajes de tu cita.</p>{% endif %}
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
       {% if cliente %}<p class="mt-1 text-xs text-piedra-400">Ya verificamos este número. Si lo cambias, te pediremos un código.</p>{% endif %}
     </div>
     <div id="otp" aria-live="polite">
@@ -74,6 +77,7 @@
     {% endif %}
     <div>
       <label for="notas" class="mb-1 block text-sm text-piedra-400">¿Algo que debamos saber? <span class="text-piedra-500">(opcional)</span></label>
+<<<<<<< HEAD
       <input id="notas" name="notas" value="{{ datos.notas }}" maxlength="240" placeholder="Ej.: degradado bajo, no tan corto arriba" aria-describedby="ayuda-notas"
              class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 placeholder-piedra-500 focus:border-laton-500 focus:ring-laton-500">
       <p id="ayuda-notas" class="mt-1 text-xs text-piedra-500">No escribas información de salud; si tienes alguna alergia, coméntala en persona.</p>
@@ -115,6 +119,19 @@
       </label>
       {% endif %}
     </section>
+=======
+      <input id="notas" name="notas" value="{{ datos.notas }}" maxlength="240" placeholder="Ej.: degradado bajo, no tan corto arriba"
+             class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 placeholder-piedra-500 focus:border-laton-500 focus:ring-laton-500">
+    </div>
+    <div>
+      <label class="mb-1 block text-sm text-piedra-400">Foto de referencia <span class="text-piedra-500">(opcional)</span></label>
+      <input type="file" name="foto" accept="image/*" class="block w-full text-sm text-piedra-400 file:mr-3 file:h-10 file:rounded-lg file:border-0 file:bg-carbon-700 file:px-4 file:text-marfil-50">
+    </div>
+    <label class="flex items-start gap-3 text-sm">
+      <input type="checkbox" name="acepta" checked class="mt-0.5 h-5 w-5 rounded border-carbon-600 bg-carbon-800 text-laton-500 focus:ring-laton-500">
+      <span class="text-piedra-400">Acepto recibir la confirmación y recordatorios por WhatsApp.{% if errores.acepta %} <span class="block text-[#e38a83]">{{ errores.acepta }}</span>{% endif %}</span>
+    </label>
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     <p class="rounded-lg bg-carbon-800 px-4 py-3 text-sm text-piedra-400">Puedes cancelar o reprogramar gratis hasta {{ cancelacion_horas }} horas antes.</p>
   </div>
 

@@ -60,11 +60,14 @@
         <legend class="px-1 text-piedra-500">Servicios</legend>
         {% for s in servicios %}<label class="flex items-center gap-2"><input type="checkbox" name="servicios" value="{{ s.id }}" class="rounded text-laton-500"> {{ s.nombre }} <span class="ml-auto tabular text-piedra-500">{{ s.duracion_min }} min · {{ s.precio|cop }}</span></label>{% endfor %}
       </fieldset>
+<<<<<<< HEAD
       <div class="rounded-lg bg-marfil-50 p-3 text-xs text-piedra-500">
         <p><strong class="text-carbon-950">Aviso de privacidad (léelo al cliente nuevo):</strong> «{{ RESP_NOMBRE }} usará tu nombre y celular para agendar tu cita, enviarte confirmación y recordatorios por WhatsApp y prestarte el servicio. Puedes consultar, corregir o borrar tus datos cuando quieras. La política está en nuestra página, en la sección Datos personales. ¿Nos autorizas?»</p>
         <label class="mt-2 flex items-start gap-2 text-sm text-carbon-950"><input type="checkbox" name="autorizacion_presencial" class="mt-0.5 rounded text-laton-500"> El cliente autorizó el tratamiento de sus datos y es mayor de edad (obligatorio para clientes nuevos; queda registrado a tu nombre).</label>
         <label class="mt-1 flex items-start gap-2 text-sm text-carbon-950"><input type="checkbox" name="marketing_presencial" class="mt-0.5 rounded text-laton-500"> Además aceptó recibir promociones (opcional; pregúntale expresamente).</label>
       </div>
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
       <div class="flex justify-end gap-2 pt-2">
         <button type="button" @click="abierto = false" class="h-11 rounded-lg px-4 text-sm">Cancelar</button>
         <button class="h-11 rounded-lg bg-laton-500 px-6 text-sm font-semibold text-carbon-950">Crear cita</button>

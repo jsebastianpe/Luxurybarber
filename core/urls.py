@@ -2,9 +2,13 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 
 from . import views_cliente as c
+<<<<<<< HEAD
 from . import views_legal as l
 from . import views_panel as p
 from . import views_webhooks as w
+=======
+from . import views_panel as p
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 
 cliente = ([
     path("", c.inicio, name="inicio"),
@@ -17,7 +21,10 @@ cliente = ([
     path("reservar/horario/slots/", c.horario_slots, name="horario_slots"),
     path("reservar/confirmar/", c.reservar_confirmar, name="reservar_confirmar"),
     path("reservar/codigo/", c.enviar_codigo, name="enviar_codigo"),
+<<<<<<< HEAD
     path("reservar/codigo/estado/", c.estado_codigo, name="estado_codigo"),
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     path("reservar/listo/<str:token>/", c.reserva_lista, name="reserva_lista"),
     path("cita/<str:token>.ics", c.cita_ics, name="cita_ics"),
     path("c/<str:token>/", c.un_toque, name="un_toque"),
@@ -27,6 +34,7 @@ cliente = ([
     path("mis-citas/<str:token>/", c.cita_detalle, name="cita_detalle"),
     path("perfil/", c.perfil, name="perfil"),
     path("perfil/fotos/<int:pk>/borrar/", c.borrar_foto, name="borrar_foto"),
+<<<<<<< HEAD
     path("perfil/autorizaciones/", c.autorizaciones, name="autorizaciones"),
     path("perfil/mis-datos.json", c.descargar_datos, name="descargar_datos"),
     path("perfil/eliminar/", c.eliminar_cuenta, name="eliminar_cuenta"),
@@ -48,6 +56,14 @@ legal = ([
 panel = ([
     path("", p.hoy, name="hoy"),
     path("ingresar/", p.LoginLimitado.as_view(), name="login"),
+=======
+    path("puntos/", c.puntos, name="puntos"),
+], "cliente")
+
+panel = ([
+    path("", p.hoy, name="hoy"),
+    path("ingresar/", auth_views.LoginView.as_view(template_name="panel/login.html"), name="login"),
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     path("salir/", auth_views.LogoutView.as_view(), name="logout"),
     path("agenda/", p.agenda, name="agenda"),
     path("agenda/cita/<int:pk>/", p.cita_panel, name="cita_panel"),
@@ -62,15 +78,22 @@ panel = ([
     path("comisiones/", p.comisiones, name="comisiones"),
     path("marketing/", p.marketing, name="marketing"),
     path("reportes/", p.reportes, name="reportes"),
+<<<<<<< HEAD
     path("datos-personales/", p.solicitudes, name="solicitudes"),
     path("datos-personales/<int:pk>/", p.solicitud, name="solicitud"),
     path("datos-personales/<int:pk>/datos.json", p.solicitud_exportar, name="solicitud_exportar"),
     path("datos-personales/bitacora/", p.bitacora, name="bitacora"),
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 ], "panel")
 
 urlpatterns = [
     path("", include(cliente)),
+<<<<<<< HEAD
     path("legal/", include(legal)),
     path("panel/", include(panel)),
     path("webhooks/whatsapp/", w.whatsapp, name="webhook_whatsapp"),
+=======
+    path("panel/", include(panel)),
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 ]

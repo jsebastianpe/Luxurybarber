@@ -23,6 +23,7 @@ def en(d, h, m=0):
     return timezone.make_aware(datetime.combine(d, time(h, m)))
 
 
+<<<<<<< HEAD
 CODIGO = "482915"
 
 
@@ -34,6 +35,10 @@ class Base(TestCase):
         p = mock.patch("core.otp._generar_codigo", return_value=CODIGO)
         p.start()
         self.addCleanup(p.stop)
+=======
+class Base(TestCase):
+    def setUp(self):
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         self.corte = Servicio.objects.create(nombre="Corte", duracion_min=30, precio=25000)
         self.barba = Servicio.objects.create(nombre="Barba", duracion_min=30, precio=20000)
         self.b = Barbero.objects.create(nombre="Andrés", comision_servicio_pct=40, comision_producto_pct=10)
@@ -92,9 +97,14 @@ class FlujoReservaTests(Base):
         r = c.post("/reservar/horario/", {"slot": f"{self.b.id}|{inicio}"})
         self.assertRedirects(r, "/reservar/confirmar/")
         c.post("/reservar/codigo/", {"telefono": "311 222 3344"})
+<<<<<<< HEAD
         codigo = CODIGO
         r = c.post("/reservar/confirmar/", {"nombre": "Ana", "telefono": "3112223344", "codigo": codigo,
                                             "acepta_datos": "on", "acepta_terminos": "on"})
+=======
+        codigo = CodigoVerificacion.objects.get(telefono="+573112223344").codigo
+        r = c.post("/reservar/confirmar/", {"nombre": "Ana", "telefono": "3112223344", "codigo": codigo, "acepta": "on"})
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         cita = Cita.objects.get(cliente__telefono="+573112223344")
         self.assertRedirects(r, f"/reservar/listo/{cita.token}/")
         self.assertEqual(cita.precio_total, 45000)
@@ -107,8 +117,12 @@ class FlujoReservaTests(Base):
         c.get(f"/reservar/barbero/?barbero={self.b.id}")
         c.post("/reservar/horario/", {"slot": f"{self.b.id}|{en(self.dia, 9).isoformat()}"})
         c.post("/reservar/codigo/", {"telefono": "3112223344"})
+<<<<<<< HEAD
         r = c.post("/reservar/confirmar/", {"nombre": "Ana", "telefono": "3112223344", "codigo": "000000",
                                             "acepta_datos": "on", "acepta_terminos": "on"})
+=======
+        r = c.post("/reservar/confirmar/", {"nombre": "Ana", "telefono": "3112223344", "codigo": "000000", "acepta": "on"})
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         self.assertContains(r, "Código incorrecto")
         self.assertFalse(Cita.objects.exists())
 
@@ -150,6 +164,7 @@ class OperacionesTests(Base):
         self.client.login(username="rec", password="x")
         self.assertEqual(self.client.get("/panel/caja/").status_code, 200)
         self.assertEqual(self.client.get("/panel/reportes/").status_code, 403)
+<<<<<<< HEAD
 
 
 # ---------------------------------------------------------------------------------------------
@@ -559,3 +574,5 @@ class WhatsAppHTTPTests(TestCase):
         self.assertEqual(ctx.exception.codigo, 132001)
         self.assertTrue(ctx.exception.es_configuracion)
         self.assertFalse(ctx.exception.transitorio)
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad

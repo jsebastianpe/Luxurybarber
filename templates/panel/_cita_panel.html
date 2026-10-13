@@ -22,7 +22,11 @@
     <li>Barba: <span class="font-medium">{{ c.pref_barba|default:"—" }}</span></li>
   </ul>
   {% if c.fotos.exists %}
+<<<<<<< HEAD
   <div class="mt-3 grid grid-cols-4 gap-2">{% for f in c.fotos.all|slice:":4" %}<img src="{% url 'legal:foto' f.pk %}" alt="" class="aspect-square rounded-md object-cover">{% endfor %}</div>
+=======
+  <div class="mt-3 grid grid-cols-4 gap-2">{% for f in c.fotos.all|slice:":4" %}<img src="{{ f.archivo.url }}" alt="" class="aspect-square rounded-md object-cover">{% endfor %}</div>
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
   {% endif %}
   {% if historial %}
   <h3 class="mt-5 text-sm font-semibold uppercase tracking-wider text-piedra-500">Últimas visitas</h3>

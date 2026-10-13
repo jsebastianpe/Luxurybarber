@@ -92,6 +92,7 @@ def get(d, k):
         return d.get(k)
     except AttributeError:
         return None
+<<<<<<< HEAD
 
 
 @register.filter(name="abs")
@@ -100,3 +101,5 @@ def valor_absoluto(n):
         return abs(int(n))
     except (TypeError, ValueError):
         return n
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad

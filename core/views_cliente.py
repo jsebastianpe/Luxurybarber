@@ -12,9 +12,13 @@ from django.views.decorators.http import require_POST
 
 from . import disponibilidad as disp
 from . import notificaciones, otp
+<<<<<<< HEAD
 from . import privacidad as priv
 from .archivos import validar_archivo
 from .models import Barbero, Cita, Cliente, Consentimiento, FotoReferencia, RetencionCupo, Servicio
+=======
+from .models import Barbero, Cita, Cliente, FotoReferencia, RetencionCupo, Servicio
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 
 CFG = settings.BARBERIA
 
@@ -240,17 +244,23 @@ def reservar_confirmar(request):
     errores = {}
     datos = {"nombre": cliente.nombre if cliente else "", "telefono": cliente.telefono if cliente else "", "notas": ""}
 
+<<<<<<< HEAD
     ya_autorizado = bool(cliente and not cliente.requiere_reaceptar)
     if request.method == "POST":
         datos = {k: request.POST.get(k, "").strip() for k in ("nombre", "telefono", "notas", "codigo")}
         marcas = {k: bool(request.POST.get(k)) for k in ("acepta_datos", "acepta_terminos", "acepta_fotos",
                                                           "acepta_marketing")}
         datos.update(marcas)
+=======
+    if request.method == "POST":
+        datos = {k: request.POST.get(k, "").strip() for k in ("nombre", "telefono", "notas", "codigo")}
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         telefono = otp.normalizar_telefono(datos["telefono"])
         if not datos["nombre"]:
             errores["nombre"] = "Escribe tu nombre."
         if not telefono:
             errores["telefono"] = "Escribe un celular válido (10 dígitos)."
+<<<<<<< HEAD
         if not ya_autorizado or telefono != cliente.telefono:
             if not marcas["acepta_datos"]:
                 errores["acepta_datos"] = "Para reservar necesitamos tu autorización para tratar tus datos y confirmar que eres mayor de edad."
@@ -263,6 +273,10 @@ def reservar_confirmar(request):
                 errores["foto"] = err_foto
             elif not (marcas["acepta_fotos"] or (cliente and cliente.acepta_sensibles and telefono == cliente.telefono)):
                 errores["foto"] = "Para guardar la foto necesitamos tu autorización expresa (casilla de fotografías). Si no la das, quita la foto."
+=======
+        if not request.POST.get("acepta"):
+            errores["acepta"] = "Necesitamos tu autorización para enviarte la confirmación."
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         verificado = cliente is not None and telefono == cliente.telefono
         if telefono and not verificado and not errores:
             err = otp.verificar(telefono, datos.get("codigo"))
@@ -273,6 +287,7 @@ def reservar_confirmar(request):
             if creado:
                 c.puntos = CFG["PUNTOS_BIENVENIDA"]
                 c.save(update_fields=["puntos"])
+<<<<<<< HEAD
             if not (ya_autorizado and verificado):
                 # Desmarcar una casilla opcional aquí no revoca lo ya autorizado: eso se hace en "Mis datos".
                 priv.aplicar_autorizaciones(
@@ -286,18 +301,32 @@ def reservar_confirmar(request):
                 cita = disp.crear_cita(
                     cliente=c, barbero=resumen["barbero"], servicios=resumen["servicios"], inicio=resumen["inicio"],
                     clave_sesion=_clave(request), notas=datos["notas"][:240],
+=======
+            try:
+                cita = disp.crear_cita(
+                    cliente=c, barbero=resumen["barbero"], servicios=resumen["servicios"], inicio=resumen["inicio"],
+                    clave_sesion=_clave(request), notas=datos["notas"],
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
                 )
             except disp.CupoNoDisponible:
                 _guardar(request, inicio=None, barbero_asignado=None)
                 messages.error(request, "Esa hora se acaba de ocupar. Elige otra; lo demás se mantiene.")
                 return redirect("cliente:reservar_horario")
+<<<<<<< HEAD
             if foto and c.acepta_sensibles:
+=======
+            foto = request.FILES.get("foto")
+            if foto:
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
                 FotoReferencia.objects.create(cliente=c, archivo=foto, descripcion="Referencia de la reserva")
             if not c.barbero_preferido_id:
                 c.barbero_preferido = cita.barbero
                 c.save(update_fields=["barbero_preferido"])
             notificaciones.confirmacion(cita)
+<<<<<<< HEAD
             request.session.cycle_key()
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
             request.session["cliente_id"] = c.id
             request.session["reserva"] = {}
             request.session["nuevo"] = creado
@@ -310,10 +339,13 @@ def reservar_confirmar(request):
         "datos": datos,
         "errores": errores,
         "cancelacion_horas": CFG["CANCELACION_HORAS"],
+<<<<<<< HEAD
         "ya_autorizado": ya_autorizado,
         "texto_autorizacion": priv.texto_autorizacion(),
         "texto_sensibles": priv.texto_sensibles(),
         "texto_marketing": priv.texto_marketing(),
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         "paso": 4,
         "nav": "reservar",
         "debug": settings.DEBUG,
@@ -326,6 +358,7 @@ def enviar_codigo(request):
     telefono = otp.normalizar_telefono(request.POST.get("telefono", ""))
     if not telefono:
         return render(request, "cliente/_otp.html", {"error": "Escribe un celular válido (10 dígitos)."})
+<<<<<<< HEAD
     reg, error, debug = otp.enviar_codigo(telefono, priv.ip_de(request))
     if reg:
         request.session["otp_id"] = reg.pk  # solo el servidor sabe qué registro consultar
@@ -344,6 +377,15 @@ def estado_codigo(request):
     return render(request, "cliente/_otp_estado.html", {"reg": reg, "whatsapp": settings.MENSAJES_BACKEND == "whatsapp"})
 
 
+=======
+    reg, error = otp.enviar_codigo(telefono)
+    return render(request, "cliente/_otp.html", {
+        "enviado": True, "telefono": telefono, "error": error,
+        "codigo_debug": reg.codigo if settings.DEBUG else None,
+    })
+
+
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 def reserva_lista(request, token):
     cita = get_object_or_404(Cita, token=token)
     nuevo = request.session.pop("nuevo", False)
@@ -401,6 +443,7 @@ def acceso(request):
         if not telefono:
             ctx["error"] = "Escribe un celular válido (10 dígitos)."
         elif not codigo:
+<<<<<<< HEAD
             reg, err, debug = otp.enviar_codigo(telefono, priv.ip_de(request))
             if reg:
                 request.session["otp_id"] = reg.pk
@@ -409,16 +452,28 @@ def acceso(request):
             else:
                 ctx.update(paso="codigo", telefono=telefono, error=err, codigo_debug=debug, reg=reg,
                            whatsapp=settings.MENSAJES_BACKEND == "whatsapp")
+=======
+            reg, err = otp.enviar_codigo(telefono)
+            ctx.update(paso="codigo", telefono=telefono, error=err,
+                       codigo_debug=reg.codigo if settings.DEBUG else None)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         else:
             err = otp.verificar(telefono, codigo)
             if err:
                 ctx.update(paso="codigo", telefono=telefono, error=err)
             else:
+<<<<<<< HEAD
                 cliente = Cliente.objects.filter(telefono=telefono, anonimizado_en__isnull=True).first()
                 if not cliente:
                     messages.info(request, "Aún no tienes citas con nosotros. ¡Reserva la primera!")
                     return redirect("cliente:reservar_servicio")
                 request.session.cycle_key()
+=======
+                cliente = Cliente.objects.filter(telefono=telefono).first()
+                if not cliente:
+                    messages.info(request, "Aún no tienes citas con nosotros. ¡Reserva la primera!")
+                    return redirect("cliente:reservar_servicio")
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
                 request.session["cliente_id"] = cliente.id
                 return redirect(siguiente)
     return render(request, "cliente/acceso.html", ctx)
@@ -435,9 +490,12 @@ def _requiere_cliente(view):
         if not c:
             return redirect(f"{reverse('cliente:acceso')}?next={request.path}")
         request.cliente = c
+<<<<<<< HEAD
         # Cambio sustancial de la política: se informa y se pide aceptar la nueva versión (Decreto 1074, 2.2.2.25.2.2)
         if c.requiere_reaceptar and view.__name__ not in ("reaceptar_politica", "descargar_datos", "eliminar_cuenta"):
             return redirect(f"{reverse('cliente:reaceptar')}?next={request.path}")
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         return view(request, *a, **kw)
     _w.__name__ = view.__name__
     return _w
@@ -483,6 +541,7 @@ def perfil(request):
     c = request.cliente
     if request.method == "POST":
         if request.FILES.get("foto"):
+<<<<<<< HEAD
             if not c.acepta_sensibles:
                 messages.error(request, "Primero autoriza el uso de fotografías en «Mis datos».")
             else:
@@ -493,10 +552,17 @@ def perfil(request):
                     FotoReferencia.objects.create(
                         cliente=c, archivo=request.FILES["foto"], descripcion=request.POST.get("descripcion", "")[:120])
                     messages.success(request, "Foto guardada.")
+=======
+            FotoReferencia.objects.create(
+                cliente=c, archivo=request.FILES["foto"], descripcion=request.POST.get("descripcion", "")[:120]
+            )
+            messages.success(request, "Foto guardada.")
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
         else:
             for campo in ("nombre", "email", "pref_maquina", "pref_estilo", "pref_barba"):
                 if campo in request.POST:
                     setattr(c, campo, request.POST[campo].strip()[:120])
+<<<<<<< HEAD
             bp = request.POST.get("barbero_preferido")
             c.barbero_preferido = Barbero.objects.filter(pk=bp).first() if bp else None
             c.save()
@@ -581,6 +647,23 @@ def borrar_foto(request, pk):
         for f in FotoReferencia.objects.filter(pk=pk, cliente=request.cliente):
             f.archivo.delete(save=False)
             f.delete()
+=======
+            c.acepta_whatsapp = bool(request.POST.get("acepta_whatsapp"))
+            bp = request.POST.get("barbero_preferido")
+            c.barbero_preferido = Barbero.objects.filter(pk=bp).first() if bp else None
+            c.save()
+            messages.success(request, "Preferencias guardadas. Tu barbero las verá antes de tu cita.")
+        return redirect("cliente:perfil")
+    return render(request, "cliente/perfil.html", {
+        "cliente": c, "barberos": Barbero.objects.filter(activo=True), "nav": "perfil",
+    })
+
+
+@_requiere_cliente
+def borrar_foto(request, pk):
+    if request.method == "POST":
+        FotoReferencia.objects.filter(pk=pk, cliente=request.cliente).delete()
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     return redirect("cliente:perfil")
 
 

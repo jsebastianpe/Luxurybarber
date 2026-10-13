@@ -1,9 +1,15 @@
 """Django Admin = módulo de Configuración (servicios, barberos, horarios, productos)."""
 from django.contrib import admin
 
+<<<<<<< HEAD
 from .models import (Barbero, Bloqueo, Caja, Cita, Cliente, Consentimiento, FotoReferencia,
                      HorarioLaboral, MensajeEnviado, MovimientoCaja, MovimientoInventario, Producto,
                      RegistroAcceso, Servicio, SolicitudDatos)
+=======
+from .models import (Barbero, Bloqueo, Caja, Cita, Cliente, CodigoVerificacion, FotoReferencia,
+                     HorarioLaboral, MensajeEnviado, MovimientoCaja, MovimientoInventario, Producto,
+                     Servicio)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 
 
 @admin.register(Servicio)
@@ -35,17 +41,25 @@ class BloqueoAdmin(admin.ModelAdmin):
 class FotoInline(admin.TabularInline):
     model = FotoReferencia
     extra = 0
+<<<<<<< HEAD
     fields = ("descripcion", "es_resultado", "creado")
     readonly_fields = ("creado",)
     can_delete = True
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 
 
 @admin.register(Cliente)
 class ClienteAdmin(admin.ModelAdmin):
+<<<<<<< HEAD
     list_display = ("nombre", "telefono", "puntos", "ultima_visita", "politica_version", "acepta_marketing", "anonimizado_en")
     list_filter = ("acepta_marketing", "acepta_sensibles", "politica_version")
     search_fields = ("nombre", "telefono", "email")
     readonly_fields = ("politica_version", "autorizado_en", "acepta_marketing", "acepta_sensibles", "token_baja", "anonimizado_en")
+=======
+    list_display = ("nombre", "telefono", "puntos", "ultima_visita", "no_shows")
+    search_fields = ("nombre", "telefono", "email")
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     inlines = [FotoInline]
 
 
@@ -68,6 +82,7 @@ admin.site.register(MovimientoInventario)
 admin.site.register(Caja)
 admin.site.register(MovimientoCaja)
 admin.site.register(MensajeEnviado)
+<<<<<<< HEAD
 
 
 class SoloLectura(admin.ModelAdmin):
@@ -100,3 +115,6 @@ class SolicitudDatosAdmin(admin.ModelAdmin):
     list_display = ("radicado", "tipo", "estado", "nombre", "recibida_en", "vence_en")
     list_filter = ("tipo", "estado")
     readonly_fields = ("radicado", "recibida_en", "ip")
+=======
+admin.site.register(CodigoVerificacion)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad

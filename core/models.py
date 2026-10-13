@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import os
 import secrets
 import uuid
+=======
+import secrets
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 from datetime import timedelta
 from decimal import Decimal
 
@@ -14,12 +18,15 @@ def _token():
     return secrets.token_urlsafe(16)
 
 
+<<<<<<< HEAD
 def _ruta_foto(instancia, nombre):
     """Nombre aleatorio: la URL no revela al cliente y no se puede adivinar."""
     ext = os.path.splitext(nombre)[1].lower()[:5] or ".jpg"
     return f"referencias/{timezone.now():%Y/%m}/{uuid.uuid4().hex}{ext}"
 
 
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 class Servicio(models.Model):
     CATEGORIAS = [
         ("corte", "Cortes"),
@@ -113,6 +120,7 @@ class Cliente(models.Model):
     pref_maquina = models.CharField("Número de máquina", max_length=40, blank=True)
     pref_estilo = models.CharField("Estilo preferido", max_length=120, blank=True)
     pref_barba = models.CharField("Tipo de barba", max_length=80, blank=True)
+<<<<<<< HEAD
     notas = models.TextField(blank=True, help_text="Notas internas del equipo (no incluir datos sensibles)")
     puntos = models.IntegerField(default=0)
     acepta_whatsapp = models.BooleanField("Mensajes del servicio (confirmación y recordatorios)", default=True)
@@ -122,6 +130,11 @@ class Cliente(models.Model):
     autorizado_en = models.DateTimeField(null=True, blank=True)
     token_baja = models.CharField(max_length=32, unique=True, default=_token)
     anonimizado_en = models.DateTimeField(null=True, blank=True)
+=======
+    notas = models.TextField(blank=True, help_text="Notas internas del equipo")
+    puntos = models.IntegerField(default=0)
+    acepta_whatsapp = models.BooleanField(default=True)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     no_shows = models.PositiveIntegerField(default=0)
     creado = models.DateTimeField(auto_now_add=True)
     ultima_visita = models.DateTimeField(null=True, blank=True)
@@ -137,6 +150,7 @@ class Cliente(models.Model):
         return self.nombre.split()[0] if self.nombre else ""
 
     @property
+<<<<<<< HEAD
     def requiere_reaceptar(self):
         return self.politica_version != settings.POLITICA_VERSION
 
@@ -145,6 +159,8 @@ class Cliente(models.Model):
         return self.solicitudes.filter(tipo__in=SolicitudDatos.RECLAMOS, estado__in=SolicitudDatos.ABIERTAS).first()
 
     @property
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     def dias_inactivo(self):
         if not self.ultima_visita:
             return None
@@ -153,7 +169,11 @@ class Cliente(models.Model):
 
 class FotoReferencia(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name="fotos")
+<<<<<<< HEAD
     archivo = models.FileField(upload_to=_ruta_foto)
+=======
+    archivo = models.FileField(upload_to="referencias/%Y/%m/")
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     descripcion = models.CharField(max_length=120, blank=True)
     es_resultado = models.BooleanField(default=False, help_text="Foto del corte terminado (vs. referencia)")
     creado = models.DateTimeField(auto_now_add=True)
@@ -227,6 +247,7 @@ class RetencionCupo(models.Model):
         return self.expira > timezone.now()
 
 
+<<<<<<< HEAD
 ESTADOS_ENTREGA = [("pendiente", "Pendiente"), ("enviado", "Enviado"), ("entregado", "Entregado"),
                    ("leido", "Leído"), ("fallido", "No entregado")]
 ORDEN_ESTADOS = {"pendiente": 0, "enviado": 1, "entregado": 2, "leido": 3, "fallido": 4}
@@ -244,6 +265,14 @@ class CodigoVerificacion(models.Model):
     estado = models.CharField(max_length=10, choices=ESTADOS_ENTREGA, default="pendiente")
     error = models.CharField(max_length=160, blank=True)
     ip = models.GenericIPAddressField(null=True, blank=True)
+=======
+class CodigoVerificacion(models.Model):
+    telefono = models.CharField(max_length=20, db_index=True)
+    codigo = models.CharField(max_length=6)
+    expira = models.DateTimeField()
+    intentos = models.PositiveIntegerField(default=0)
+    usado = models.BooleanField(default=False)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     creado = models.DateTimeField(auto_now_add=True)
 
 
@@ -263,15 +292,19 @@ class MensajeEnviado(models.Model):
     canal = models.CharField(max_length=12, default="consola")
     contenido = models.TextField()
     ok = models.BooleanField(default=True)
+<<<<<<< HEAD
     wamid = models.CharField(max_length=128, blank=True, db_index=True)
     estado = models.CharField(max_length=10, choices=ESTADOS_ENTREGA, default="pendiente")
     error = models.CharField(max_length=160, blank=True)
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
     enviado = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ["-enviado"]
 
 
+<<<<<<< HEAD
 # ---------------- Protección de datos ----------------
 class Consentimiento(models.Model):
     """Prueba de la autorización (Decreto 1074 de 2015, art. 2.2.2.25.2.5): quién, qué, cuándo, cómo."""
@@ -388,6 +421,8 @@ class RegistroAcceso(models.Model):
         ordering = ["-fecha"]
 
 
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 # ---------------- Inventario ----------------
 class Producto(models.Model):
     nombre = models.CharField(max_length=100)

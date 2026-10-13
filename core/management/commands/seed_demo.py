@@ -11,10 +11,15 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
+<<<<<<< HEAD
 from core.models import (Barbero, Bloqueo, Caja, Cita, Cliente, Consentimiento, HorarioLaboral, MensajeEnviado,
                          MovimientoCaja, MovimientoInventario, Producto, RegistroAcceso, RetencionCupo, Servicio,
                          SolicitudDatos)
 from core import privacidad as priv
+=======
+from core.models import (Barbero, Bloqueo, Caja, Cita, Cliente, HorarioLaboral, MensajeEnviado,
+                         MovimientoCaja, MovimientoInventario, Producto, RetencionCupo, Servicio)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 
 SERVICIOS = [
     # nombre, categoria, minutos, precio, ahorro, descripcion
@@ -65,8 +70,12 @@ class Command(BaseCommand):
     def handle(self, *args, **opts):
         rnd = random.Random(42)
         if opts["reset"]:
+<<<<<<< HEAD
             for m in (Consentimiento, SolicitudDatos, RegistroAcceso,
                       MovimientoCaja, Caja, MovimientoInventario, MensajeEnviado, RetencionCupo, Cita, Bloqueo,
+=======
+            for m in (MovimientoCaja, Caja, MovimientoInventario, MensajeEnviado, RetencionCupo, Cita, Bloqueo,
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
                       HorarioLaboral, Cliente, Producto, Barbero, Servicio):
                 m.objects.all().delete()
             User.objects.filter(username__in=["admin", "recepcion"] + [b[1] for b in BARBEROS]).delete()
@@ -186,12 +195,15 @@ class Command(BaseCommand):
                         cursor = fin
         for c in clientes:
             c.save()
+<<<<<<< HEAD
             # Datos de demostración: autorización registrada como presencial
             priv.aplicar_autorizaciones(c, sensibles=False, marketing=rnd.random() < .6, canal="presencial", usuario=rec)
 
         priv.radicar_solicitud(tipo=SolicitudDatos.CONSULTA, cliente=demo, nombre=demo.nombre, documento="1094000000",
                                telefono=demo.telefono, email="cliente.demo@example.com",
                                descripcion="Quiero saber qué datos míos tienen y para qué los usan.")
+=======
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 
         # Ventas y uso de productos
         prods = list(Producto.objects.all())

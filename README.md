@@ -103,6 +103,7 @@ python manage.py alertar_inactivos --dias 45   # 1 vez al día: reactivar client
 - Windows: Programador de tareas con el mismo comando.
 - Si más adelante usas Celery o Django-Q2, llama a los mismos comandos desde una tarea periódica.
 
+<<<<<<< HEAD
 Por defecto los mensajes se imprimen en la terminal (`MENSAJES_BACKEND=consola`). Para enviar por WhatsApp de verdad
 (códigos de verificación, confirmaciones y recordatorios) sigue **`docs/WHATSAPP.md`**:
 
@@ -139,10 +140,23 @@ Documentos internos en `legal/`: manual interno con compromiso de confidencialid
 encargados y formato de autorización de imagen para publicidad.
 
 ## 7. Pasar a producción (resumen)
+=======
+Por defecto los mensajes se imprimen en la terminal (`MENSAJES_BACKEND=consola`). Para WhatsApp real:
+crea una app en Meta for Developers con WhatsApp Cloud API, pon `MENSAJES_BACKEND=whatsapp`, `WHATSAPP_TOKEN` y
+`WHATSAPP_PHONE_ID` en `.env`. Para escribir fuera de la ventana de 24 h Meta exige **plantillas aprobadas**: adapta
+`_enviar_whatsapp` en `core/notificaciones.py` para enviar `type: "template"`.
+
+## 6. Pasar a producción (resumen)
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad
 
 1. `.env`: `DJANGO_DEBUG=0`, una `DJANGO_SECRET_KEY` nueva, `DJANGO_ALLOWED_HOSTS=tudominio.com`, `SITIO_URL=https://tudominio.com`.
 2. PostgreSQL: `pip install "psycopg[binary]"` y completa las variables `POSTGRES_*`.
 3. `pip install gunicorn whitenoise`, `python manage.py collectstatic`, servir con `gunicorn config.wsgi`.
+<<<<<<< HEAD
 4. Programa `enviar_recordatorios` (cada 15 min), `alertar_inactivos` (diario, 10:00 a. m.) y `depurar_datos` (diario).
 5. Completa los datos del responsable en `.env` y ejecuta `python manage.py check --deploy` hasta que no muestre errores.
 6. Opcional: tiempo real instantáneo con Django Channels (WebSockets) en lugar del refresco cada 20 s.
+=======
+4. Programa los dos comandos de la sección 5.
+5. Opcional: tiempo real instantáneo con Django Channels (WebSockets) en lugar del refresco cada 20 s.
+>>>>>>> f94399e302ad2258f63cf5c33021da487e6234ad

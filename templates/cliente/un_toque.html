@@ -1,0 +1,29 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}Tu cita · {{ NEGOCIO.NOMBRE }}{% endblock %}
+{% block contenido %}
+<div class="mx-auto max-w-md">
+  <h1 class="font-display text-3xl">Tu cita</h1>
+  {% include "cliente/_tarjeta_cita.html" with cita=cita %}
+  {% if cita.es_futura and cita.estado == "pendiente" or cita.es_futura and cita.estado == "confirmada" %}
+  <form method="post" class="mt-6 space-y-3">
+    {% csrf_token %}
+    {% if cita.estado == "pendiente" %}
+    <button name="accion" value="confirmar" class="h-12 w-full rounded-lg bg-laton-500 font-semibold text-carbon-950 hover:bg-laton-400">Confirmar asistencia</button>
+    {% else %}
+    <p class="rounded-lg bg-salvia/15 px-4 py-3 text-center text-sm text-[#8fc4a0]">Tu cita está confirmada ✓</p>
+    {% endif %}
+    <a href="{% url 'cliente:acceso' %}?next={% url 'cliente:cita_detalle' cita.token %}" class="flex h-12 w-full items-center justify-center rounded-lg border-[1.5px] border-laton-500 text-laton-400">Reprogramar</a>
+    <div x-data="{ seguro: false }">
+      <button type="button" x-show="!seguro" @click="seguro = true" class="h-12 w-full rounded-lg text-sm text-piedra-400 underline">Cancelar cita</button>
+      <div x-show="seguro" x-cloak class="rounded-card border border-poste/60 p-4 text-center">
+        <p class="text-sm">¿Seguro? Liberaremos el horario para otro cliente.</p>
+        <div class="mt-3 flex gap-2">
+          <button type="button" @click="seguro = false" class="h-11 flex-1 rounded-lg border border-carbon-600">No</button>
+          <button name="accion" value="cancelar" class="h-11 flex-1 rounded-lg bg-poste font-semibold text-marfil-50">Sí, cancelar</button>
+        </div>
+      </div>
+    </div>
+  </form>
+  {% endif %}
+</div>
+{% endblock %}

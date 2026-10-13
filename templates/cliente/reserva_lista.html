@@ -1,0 +1,40 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}¡Reserva confirmada!{% endblock %}
+{% block contenido %}
+<div class="mx-auto max-w-md text-center">
+  <svg class="check-anim mx-auto mt-6 h-20 w-20" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+    <circle cx="24" cy="24" r="22" stroke="#4F8A63" stroke-width="2.5" />
+    <path d="M14 24.5 21 31l13-14" stroke="#C9A45C" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  <h1 class="mt-6 font-display text-4xl">¡Listo, {{ cita.cliente.primer_nombre }}!</h1>
+  <p class="mt-2 text-piedra-400">Te esperamos el {{ cita.inicio|fecha_larga }} a las {{ cita.inicio|hora }}</p>
+
+  <div class="mt-8 rounded-card border border-carbon-600 bg-carbon-800 p-5 text-left">
+    <div class="flex items-center gap-3">
+      {% include "componentes/_avatar.html" with b=cita.barbero size="h-12 w-12" %}
+      <div>
+        <p class="font-semibold">{{ cita.nombres_servicios }}</p>
+        <p class="text-sm text-piedra-400">con {{ cita.barbero.nombre }} · {{ cita.duracion_min|minutos }}</p>
+      </div>
+      <p class="ml-auto font-semibold tabular text-laton-400">{{ cita.precio_total|cop }}</p>
+    </div>
+    <p class="mt-4 border-t border-carbon-600 pt-4 text-sm text-piedra-400">{{ NEGOCIO.DIRECCION }}</p>
+  </div>
+
+  <div class="mt-5 grid grid-cols-3 gap-2 text-sm">
+    <a href="{% url 'cliente:cita_ics' cita.token %}" class="flex h-14 flex-col items-center justify-center rounded-lg border border-carbon-600 hover:border-laton-500/60">📅<span>Calendario</span></a>
+    <a href="https://www.google.com/maps/search/?api=1&query={{ NEGOCIO.DIRECCION|urlencode }}" target="_blank" rel="noopener" class="flex h-14 flex-col items-center justify-center rounded-lg border border-carbon-600 hover:border-laton-500/60">📍<span>Cómo llegar</span></a>
+    <button type="button" x-data @click="navigator.share ? navigator.share({ title: 'Mi cita', url: location.origin + '{% url 'cliente:un_toque' cita.token %}' }) : navigator.clipboard.writeText(location.origin + '{% url 'cliente:un_toque' cita.token %}')"
+            class="flex h-14 flex-col items-center justify-center rounded-lg border border-carbon-600 hover:border-laton-500/60">↗<span>Compartir</span></button>
+  </div>
+
+  {% if nuevo %}
+  <a href="{% url 'cliente:perfil' %}" class="mt-6 block rounded-card border border-laton-500/50 bg-laton-500/10 p-4 text-left">
+    <p class="font-semibold text-laton-400">Ganaste {{ puntos_bienvenida }} puntos de bienvenida</p>
+    <p class="text-sm text-piedra-400">Guarda tus preferencias de corte para que tu barbero las vea antes de cada cita →</p>
+  </a>
+  {% endif %}
+  <p class="mt-6 text-sm text-piedra-400">Te enviamos el resumen por WhatsApp y te recordaremos 24 h y 2 h antes.</p>
+  <a href="{% url 'cliente:mis_citas' %}" class="mt-6 inline-flex h-12 items-center rounded-lg border-[1.5px] border-laton-500 px-6 text-laton-400">Ver mis citas</a>
+</div>
+{% endblock %}

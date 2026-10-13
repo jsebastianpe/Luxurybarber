@@ -1,0 +1,13 @@
+{% if messages %}
+<div class="fixed right-4 top-20 z-50 flex w-full max-w-sm flex-col gap-2" aria-live="polite">
+  {% for m in messages %}
+  <div x-data="{ v: true }" x-init="setTimeout(() => v = false, 5000)" x-show="v" x-transition.opacity
+       class="flex items-start gap-3 rounded-card border bg-white px-4 py-3 text-sm shadow-lg
+              {% if m.tags == 'error' %}border-poste/40{% elif m.tags == 'success' %}border-salvia/40{% else %}border-laton-500/40{% endif %}">
+    <span class="mt-1 h-2 w-2 flex-none rounded-full {% if m.tags == 'error' %}bg-poste{% elif m.tags == 'success' %}bg-salvia{% else %}bg-laton-500{% endif %}"></span>
+    <p class="flex-1">{{ m }}</p>
+    <button type="button" @click="v = false" class="text-piedra-500" aria-label="Cerrar">✕</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}

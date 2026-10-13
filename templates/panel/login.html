@@ -1,0 +1,22 @@
+{% load static %}<!doctype html>
+<html lang="es">
+<head>
+  {% include "componentes/_head.html" %}
+  <title>Ingresar al panel · {{ NEGOCIO.NOMBRE }}</title>
+</head>
+<body class="flex min-h-screen items-center justify-center bg-carbon-950 px-4 font-sans text-marfil-50">
+  <form method="post" class="w-full max-w-sm rounded-2xl border border-carbon-600 bg-carbon-800 p-8">
+    {% csrf_token %}
+    <img src="{% static 'img/icono.svg' %}" alt="" class="h-12 w-12">
+    <h1 class="mt-4 font-display text-3xl">Panel del equipo</h1>
+    <p class="mt-1 text-sm text-piedra-400">{{ NEGOCIO.NOMBRE }}</p>
+    {% if form.errors %}<p class="mt-4 rounded-lg bg-poste/20 px-3 py-2 text-sm">Usuario o contraseña incorrectos.</p>{% endif %}
+    <label class="mt-6 block text-sm text-piedra-400">Usuario
+      <input name="username" autocomplete="username" required autofocus class="mt-1 h-12 w-full rounded-lg border-carbon-600 bg-carbon-900 text-marfil-50 focus:border-laton-500 focus:ring-laton-500"></label>
+    <label class="mt-4 block text-sm text-piedra-400">Contraseña
+      <input type="password" name="password" autocomplete="current-password" required class="mt-1 h-12 w-full rounded-lg border-carbon-600 bg-carbon-900 text-marfil-50 focus:border-laton-500 focus:ring-laton-500"></label>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button class="mt-6 h-12 w-full rounded-lg bg-laton-500 font-semibold text-carbon-950 hover:bg-laton-400">Ingresar</button>
+  </form>
+</body>
+</html>

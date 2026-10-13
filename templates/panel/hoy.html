@@ -1,0 +1,61 @@
+{% extends "panel/base.html" %}
+{% block titulo %}Hoy{% endblock %}
+{% block encabezado %}Hoy · <span class="font-normal capitalize text-piedra-500">{% now "l j \d\e F" %}</span>{% endblock %}
+{% block acciones %}<a href="{% url 'panel:agenda' %}" class="h-10 rounded-lg bg-carbon-950 px-4 text-sm font-semibold leading-10 text-marfil-50 hover:bg-carbon-800">Ver agenda</a>{% endblock %}
+{% block contenido %}
+<div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+  <div class="rounded-card border border-marfil-100 bg-white p-4"><p class="text-sm text-piedra-500">Citas del día</p><p class="mt-1 text-3xl font-semibold tabular">{{ kpis.citas }}</p></div>
+  <div class="rounded-card border border-marfil-100 bg-white p-4"><p class="text-sm text-piedra-500">Completadas</p><p class="mt-1 text-3xl font-semibold tabular">{{ kpis.completadas }}</p></div>
+  {% if kpis.ingresos is not None %}
+  <div class="rounded-card border border-marfil-100 bg-white p-4"><p class="text-sm text-piedra-500">Ingresos en caja</p><p class="mt-1 text-3xl font-semibold tabular">{{ kpis.ingresos|cop }}</p></div>
+  {% else %}
+  <div class="rounded-card border border-marfil-100 bg-white p-4"><p class="text-sm text-piedra-500">Comisiones</p><a href="{% url 'panel:comisiones' %}" class="mt-2 block text-laton-700 underline">Ver mi liquidación</a></div>
+  {% endif %}
+  <div class="rounded-card border border-marfil-100 bg-white p-4"><p class="text-sm text-piedra-500">No-shows</p><p class="mt-1 text-3xl font-semibold tabular {% if kpis.no_shows %}text-poste{% endif %}">{{ kpis.no_shows }}</p></div>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-[1fr_340px]">
+  <section class="rounded-card border border-marfil-100 bg-white">
+    <h2 class="border-b border-marfil-100 px-5 py-4 font-semibold">Próximas citas</h2>
+    <ul class="divide-y divide-marfil-100">
+      {% for c in proximas %}
+      <li class="flex items-center gap-4 px-5 py-3">
+        <span class="w-20 font-semibold tabular">{{ c.inicio|hora }}</span>
+        <div class="flex-1">
+          <a href="{% url 'panel:cliente_ficha' c.cliente_id %}" class="font-medium hover:underline">{{ c.cliente.nombre }}</a>
+          {% if c.cliente.pref_estilo or c.cliente.pref_maquina %}<span title="Tiene preferencias guardadas" class="ml-1 text-laton-700">✎</span>{% endif %}
+          <p class="text-sm text-piedra-500">{{ c.nombres_servicios }} · {{ c.barbero.nombre }}</p>
+        </div>
+        {% include "componentes/_estado.html" with estado=c.estado %}
+      </li>
+      {% empty %}
+      <li class="px-5 py-8 text-center text-piedra-500">No hay más citas por hoy.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <aside class="space-y-4">
+    {% if ROL != "barbero" %}
+    <div class="rounded-card border border-marfil-100 bg-white p-5">
+      <h2 class="font-semibold">Caja</h2>
+      {% if caja %}<p class="mt-1 text-sm text-salvia">Abierta desde las {{ caja.abierta_en|hora }}</p>
+      {% else %}<p class="mt-1 text-sm text-ambar">La caja está cerrada.</p>{% endif %}
+      <a href="{% url 'panel:caja' %}" class="mt-3 inline-block text-sm text-laton-700 underline">Ir a caja</a>
+    </div>
+    {% endif %}
+    {% if stock_bajo %}
+    <div class="rounded-card border border-ambar/40 bg-ambar/5 p-5">
+      <h2 class="font-semibold">Stock bajo</h2>
+      <ul class="mt-2 space-y-1 text-sm">{% for p in stock_bajo %}<li class="flex justify-between"><span>{{ p.nombre }}</span><span class="tabular font-semibold {% if p.stock <= 0 %}text-poste{% else %}text-[#8a6212]{% endif %}">{{ p.stock }}</span></li>{% endfor %}</ul>
+      <a href="{% url 'panel:inventario' %}" class="mt-3 inline-block text-sm text-laton-700 underline">Ver inventario</a>
+    </div>
+    {% endif %}
+    {% if cumpleanos %}
+    <div class="rounded-card border border-marfil-100 bg-white p-5">
+      <h2 class="font-semibold">🎂 Cumpleaños hoy</h2>
+      <ul class="mt-2 text-sm">{% for c in cumpleanos %}<li>{{ c.nombre }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+  </aside>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "panel/base.html" %}
+{% block titulo %}Comisiones{% endblock %}
+{% block encabezado %}{% if ROL == "barbero" %}Mis comisiones{% else %}Comisiones{% endif %}{% endblock %}
+{% block contenido %}
+<form class="mb-5 flex flex-wrap items-end gap-2 text-sm">
+  <label>Desde<input type="date" name="desde" value="{{ desde|date:'Y-m-d' }}" class="ml-2 h-10 rounded-lg border-marfil-100 bg-white"></label>
+  <label>Hasta<input type="date" name="hasta" value="{{ hasta|date:'Y-m-d' }}" class="ml-2 h-10 rounded-lg border-marfil-100 bg-white"></label>
+  <button class="h-10 rounded-lg bg-carbon-950 px-4 font-semibold text-marfil-50">Calcular</button>
+</form>
+<div class="overflow-x-auto rounded-card border border-marfil-100 bg-white">
+  <table class="w-full text-sm">
+    <thead class="bg-marfil-50 text-left text-xs uppercase tracking-wider text-piedra-500">
+      <tr><th class="px-4 py-3">Barbero</th><th class="px-3 py-3 text-right">Servicios</th><th class="px-3 py-3 text-right">Vendido</th><th class="px-3 py-3 text-right">% serv.</th><th class="px-3 py-3 text-right">Comisión serv.</th><th class="px-3 py-3 text-right">Productos</th><th class="px-3 py-3 text-right">Comisión prod.</th><th class="px-3 py-3 text-right">Propinas</th><th class="px-4 py-3 text-right">Total a pagar</th></tr>
+    </thead>
+    <tbody class="divide-y divide-marfil-100 tabular">
+      {% for f in filas %}
+      <tr>
+        <td class="px-4 py-3 font-medium">{{ f.barbero.nombre }}</td>
+        <td class="px-3 py-3 text-right">{{ f.citas }}</td>
+        <td class="px-3 py-3 text-right">{{ f.servicios_total|cop }}</td>
+        <td class="px-3 py-3 text-right text-piedra-500">{{ f.pct_servicio|floatformat:0 }}%</td>
+        <td class="px-3 py-3 text-right">{{ f.comision_servicios|cop }}</td>
+        <td class="px-3 py-3 text-right">{{ f.productos_total|cop }} <span class="text-xs text-piedra-500">({{ f.pct_producto|floatformat:0 }}%)</span></td>
+        <td class="px-3 py-3 text-right">{{ f.comision_productos|cop }}</td>
+        <td class="px-3 py-3 text-right">{{ f.propinas|cop }}</td>
+        <td class="px-4 py-3 text-right font-semibold">{{ f.total_pagar|cop }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    {% if filas|length > 1 %}
+    <tfoot class="border-t-2 border-carbon-950"><tr><td colspan="8" class="px-4 py-3 font-semibold">Total del periodo</td><td class="px-4 py-3 text-right font-semibold tabular">{{ total|cop }}</td></tr></tfoot>
+    {% endif %}
+  </table>
+</div>
+<p class="mt-3 text-xs text-piedra-500">Se cuentan citas completadas y ventas de productos asignadas a cada barbero en el periodo. Los porcentajes se ajustan por barbero en Configuración.</p>
+{% endblock %}

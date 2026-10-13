@@ -1,0 +1,6 @@
+<dl class="mt-4 space-y-3 text-sm">
+  <div><dt class="text-piedra-400">Servicios</dt><dd class="font-medium">{{ resumen.nombres|default:"—" }}</dd></div>
+  <div><dt class="text-piedra-400">Barbero</dt><dd class="font-medium">{% if resumen.barbero %}{{ resumen.barbero.nombre }}{% elif resumen.cualquiera %}Cualquiera disponible{% else %}—{% endif %}</dd></div>
+  <div><dt class="text-piedra-400">Fecha y hora</dt><dd class="font-medium">{% if resumen.inicio %}{{ resumen.inicio|fecha_larga|capfirst }}, {{ resumen.inicio|hora_corta }}–{{ resumen.fin|hora }}{% else %}—{% endif %}</dd></div>
+  <div class="flex justify-between border-t border-carbon-600 pt-3"><dt class="text-piedra-400">{{ resumen.duracion|minutos }}</dt><dd class="font-semibold tabular text-laton-400">{{ resumen.total|cop }}</dd></div>
+</dl>

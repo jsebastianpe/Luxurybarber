@@ -1,0 +1,65 @@
+{% extends "cliente/reservar_base.html" %}
+{% block volver %}<a href="{% url 'cliente:reservar_barbero' %}" class="text-piedra-400 hover:text-marfil-50">← Volver</a>{% endblock %}
+{% block paso %}
+<form method="post" x-data="{ dia: '{{ fecha|date:'Y-m-d' }}', sel: null, etiqueta: '', aviso: false }"
+      x-on:htmx:after-swap="if (sel && !document.querySelector('[data-slot=&quot;' + sel + '&quot;]')) { sel = null; etiqueta = ''; aviso = true }">
+  {% csrf_token %}
+  <h1 class="font-display text-3xl">¿Cuándo te queda bien?</h1>
+  <p class="mt-1 text-piedra-400">Solo mostramos horas libres, actualizadas en tiempo real.</p>
+
+  {% if error %}
+  <div class="mt-4 rounded-card border border-poste/60 bg-[#2a1513] px-4 py-3 text-sm" role="alert">{{ error }}</div>
+  {% endif %}
+  <div x-show="aviso" x-cloak x-transition class="mt-4 rounded-card border border-ambar/60 bg-ambar/10 px-4 py-3 text-sm" role="status" aria-live="polite">
+    La hora que elegiste acaba de reservarse. Elige otra, por favor.
+  </div>
+
+  {# Tira de días #}
+  <div class="mt-6 flex items-center justify-between">
+    <p class="font-semibold capitalize">{{ fecha|mes }} {{ fecha|date:"Y" }}</p>
+    <p class="flex items-center gap-3 text-[11px] text-piedra-400">
+      <span class="flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-laton-500"></span>Cupos</span>
+      <span class="flex items-center gap-1"><span class="h-1.5 w-1.5 rounded-full bg-ambar"></span>Pocos</span>
+    </p>
+  </div>
+  <div class="sin-scroll -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1" role="listbox" aria-label="Elegir día">
+    {% for d in dias %}
+    {% with iso=d.fecha|date:"Y-m-d" %}
+    <button type="button" role="option"
+            {% if d.libres %}
+            hx-get="{% url 'cliente:horario_slots' %}?fecha={{ iso }}" hx-target="#slots" hx-swap="outerHTML"
+            @click="dia = '{{ iso }}'; sel = null; etiqueta = ''; aviso = false"
+            {% else %}disabled aria-disabled="true"{% endif %}
+            :aria-selected="dia === '{{ iso }}'"
+            :class="dia === '{{ iso }}' ? 'bg-laton-500 text-carbon-950 border-laton-500' : 'bg-carbon-800 border-carbon-600'"
+            class="flex h-20 w-16 flex-none flex-col items-center justify-center rounded-card border text-center transition disabled:cursor-not-allowed disabled:opacity-40">
+      <span class="text-[11px] uppercase">{% if forloop.first %}Hoy{% else %}{{ d.fecha|dia_corto }}{% endif %}</span>
+      <span class="text-xl font-semibold tabular {% if not d.libres %}line-through{% endif %}">{{ d.fecha|date:"d" }}</span>
+      <span class="mt-1 h-1.5 w-1.5 rounded-full {% if d.nivel == 'ok' %}bg-laton-500{% elif d.nivel == 'pocos' %}bg-ambar{% else %}bg-transparent{% endif %}"
+            :class="dia === '{{ iso }}' && 'ring-1 ring-carbon-950'"></span>
+    </button>
+    {% endwith %}
+    {% endfor %}
+  </div>
+
+  {% if not primer_libre %}
+  <div class="mt-8 rounded-card border border-carbon-600 bg-carbon-800 p-6 text-center">
+    <p class="font-semibold">No hay cupos en los próximos {{ dias|length }} días con esta selección.</p>
+    <a href="{% url 'cliente:reservar_barbero' %}?barbero=any" class="mt-4 inline-flex h-11 items-center rounded-lg border-[1.5px] border-laton-500 px-5 text-laton-400">Probar con cualquier barbero</a>
+  </div>
+  {% else %}
+  {% include "cliente/_slots.html" %}
+  {% endif %}
+
+  <input type="hidden" name="slot" :value="sel">
+
+  <div class="fixed inset-x-0 bottom-0 z-30 border-t border-carbon-600 bg-carbon-900/95 backdrop-blur md:static md:mt-8 md:border-0 md:bg-transparent" style="padding-bottom: env(safe-area-inset-bottom)">
+    <div class="mx-auto max-w-5xl px-4 py-3 md:px-0">
+      <p class="mb-2 truncate text-sm text-piedra-400 md:hidden">{{ resumen.nombres }}{% if resumen.barbero %} · {{ resumen.barbero.nombre }}{% endif %}<span x-show="etiqueta" x-text="' · ' + etiqueta"></span></p>
+      <button type="submit" :disabled="!sel" class="h-12 w-full rounded-lg bg-laton-500 font-semibold text-carbon-950 transition hover:bg-laton-400 disabled:cursor-not-allowed disabled:opacity-40 md:w-auto md:px-10">
+        Continuar · <span class="tabular">{{ resumen.total|cop }}</span>
+      </button>
+    </div>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "panel/base.html" %}
+{% block titulo %}Clientes{% endblock %}
+{% block encabezado %}Clientes{% endblock %}
+{% block contenido %}
+<form class="mb-4 flex flex-wrap items-center gap-2">
+  <input name="q" value="{{ q }}" placeholder="Buscar por nombre o celular" class="h-10 w-64 rounded-lg border-marfil-100 bg-white text-sm"
+         hx-get="{% url 'panel:clientes' %}" hx-trigger="keyup changed delay:300ms" hx-target="#tabla" hx-select="#tabla" hx-swap="outerHTML" hx-include="[name=filtro]">
+  <input type="hidden" name="filtro" value="{{ filtro }}">
+  <a href="?q={{ q }}" class="h-10 rounded-full px-4 text-sm leading-10 {% if not filtro %}bg-carbon-950 text-marfil-50{% else %}bg-white{% endif %}">Todos</a>
+  <a href="?filtro=inactivos&q={{ q }}" class="h-10 rounded-full px-4 text-sm leading-10 {% if filtro == 'inactivos' %}bg-carbon-950 text-marfil-50{% else %}bg-white{% endif %}">Inactivos +30 días</a>
+  <a href="?filtro=frecuentes&q={{ q }}" class="h-10 rounded-full px-4 text-sm leading-10 {% if filtro == 'frecuentes' %}bg-carbon-950 text-marfil-50{% else %}bg-white{% endif %}">Frecuentes</a>
+  <a href="?filtro=nuevos&q={{ q }}" class="h-10 rounded-full px-4 text-sm leading-10 {% if filtro == 'nuevos' %}bg-carbon-950 text-marfil-50{% else %}bg-white{% endif %}">Nuevos</a>
+</form>
+<div id="tabla" class="overflow-x-auto rounded-card border border-marfil-100 bg-white">
+  <table class="w-full text-sm">
+    <thead class="bg-marfil-50 text-left text-xs uppercase tracking-wider text-piedra-500">
+      <tr><th class="px-4 py-3">Cliente</th><th class="px-4 py-3">Celular</th><th class="px-4 py-3 text-right">Visitas</th><th class="px-4 py-3">Última visita</th><th class="px-4 py-3 text-right">Puntos</th><th class="px-4 py-3">Preferencia</th></tr>
+    </thead>
+    <tbody class="divide-y divide-marfil-100">
+      {% for c in clientes %}
+      <tr class="hover:bg-marfil-50">
+        <td class="px-4 py-3"><a href="{% url 'panel:cliente_ficha' c.pk %}" class="font-medium hover:underline">{{ c.nombre }}</a>{% if c.no_shows > 1 %} <span class="text-[11px] text-poste">· {{ c.no_shows }} no-shows</span>{% endif %}</td>
+        <td class="px-4 py-3 tabular text-piedra-500">{{ c.telefono }}</td>
+        <td class="px-4 py-3 text-right tabular">{{ c.visitas }}</td>
+        <td class="px-4 py-3">{% if c.ultima_visita %}{{ c.ultima_visita|date:"d/m/Y" }} <span class="text-xs {% if c.dias_inactivo > 30 %}text-ambar{% else %}text-piedra-500{% endif %}">({{ c.dias_inactivo }} d)</span>{% else %}—{% endif %}</td>
+        <td class="px-4 py-3 text-right tabular">{{ c.puntos }}</td>
+        <td class="px-4 py-3 text-piedra-500">{{ c.pref_estilo|default:"—" }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="px-4 py-10 text-center text-piedra-500">No hay clientes con ese filtro.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

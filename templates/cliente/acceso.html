@@ -1,0 +1,25 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}Ingresar · {{ NEGOCIO.NOMBRE }}{% endblock %}
+{% block contenido %}
+<div class="mx-auto max-w-sm pt-6">
+  <h1 class="font-display text-3xl">Ingresa con tu celular</h1>
+  <p class="mt-2 text-piedra-400">Sin contraseñas: te enviamos un código por WhatsApp.</p>
+  <form method="post" class="mt-8 space-y-4">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {% if paso == "codigo" %}
+      <input type="hidden" name="telefono" value="{{ telefono }}">
+      <p class="text-sm text-piedra-400">Enviamos el código a <span class="font-semibold text-marfil-50">{{ telefono }}</span>. <a href="{% url 'cliente:acceso' %}" class="text-laton-400 underline">Cambiar</a></p>
+      {% include "cliente/_otp.html" with enviado=True %}
+      <button class="h-12 w-full rounded-lg bg-laton-500 font-semibold text-carbon-950 hover:bg-laton-400">Ingresar</button>
+    {% else %}
+      <label for="tel" class="block text-sm text-piedra-400">Celular</label>
+      <input id="tel" name="telefono" inputmode="tel" autocomplete="tel" placeholder="300 123 4567" required
+             class="h-12 w-full rounded-lg border-carbon-600 bg-carbon-800 text-marfil-50 placeholder-piedra-500 focus:border-laton-500 focus:ring-laton-500">
+      {% if error %}<p class="text-sm text-[#e38a83]">{{ error }}</p>{% endif %}
+      <button class="h-12 w-full rounded-lg bg-laton-500 font-semibold text-carbon-950 hover:bg-laton-400">Enviar código</button>
+    {% endif %}
+  </form>
+  <p class="mt-8 text-center text-sm text-piedra-400">¿Primera vez? <a href="{% url 'cliente:reservar_servicio' %}" class="text-laton-400 underline">Reserva y creamos tu cuenta</a></p>
+</div>
+{% endblock %}

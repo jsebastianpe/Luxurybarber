@@ -1,0 +1,87 @@
+{% extends "panel/base.html" %}
+{% block titulo %}Agenda{% endblock %}
+{% block encabezado %}Agenda{% endblock %}
+{% block acciones %}
+{% if ROL != "barbero" %}
+<button @click="$dispatch('abrir-nueva')" class="h-10 rounded-lg bg-laton-500 px-4 text-sm font-semibold text-carbon-950 hover:bg-laton-400">+ Nueva cita</button>
+{% endif %}
+<button @click="$dispatch('abrir-bloqueo')" class="h-10 rounded-lg border-[1.5px] border-carbon-950 px-4 text-sm font-medium">Bloquear horario</button>
+{% endblock %}
+{% block contenido %}
+<div class="mb-4 flex flex-wrap items-center gap-3">
+  <a href="?fecha={{ anterior|date:'Y-m-d' }}" class="flex h-10 w-10 items-center justify-center rounded-lg border border-marfil-100 bg-white" aria-label="Día anterior">‹</a>
+  <form><input type="date" name="fecha" value="{{ fecha|date:'Y-m-d' }}" onchange="this.form.submit()" class="h-10 rounded-lg border-marfil-100 bg-white text-sm"></form>
+  <a href="?fecha={{ siguiente|date:'Y-m-d' }}" class="flex h-10 w-10 items-center justify-center rounded-lg border border-marfil-100 bg-white" aria-label="Día siguiente">›</a>
+  {% if not es_hoy %}<a href="?" class="text-sm text-laton-700 underline">Hoy</a>{% endif %}
+  <p class="font-semibold capitalize">{{ fecha|fecha_larga }}</p>
+  <div class="ml-auto hidden flex-wrap gap-3 text-xs text-piedra-500 md:flex">
+    <span class="flex items-center gap-1"><i class="h-3 w-1 rounded bg-ambar"></i>Pendiente</span>
+    <span class="flex items-center gap-1"><i class="h-3 w-1 rounded bg-laton-500"></i>Confirmada</span>
+    <span class="flex items-center gap-1"><i class="h-3 w-1 rounded bg-salvia"></i>En silla</span>
+    <span class="flex items-center gap-1"><i class="h-3 w-1 rounded bg-piedra-400"></i>Completada</span>
+    <span class="flex items-center gap-1"><i class="h-3 w-1 rounded bg-poste"></i>No-show</span>
+  </div>
+</div>
+
+<div id="agenda-grid" hx-get="{% url 'panel:agenda' %}?fecha={{ fecha|date:'Y-m-d' }}&parcial=1"
+     hx-trigger="agenda-cambio from:body, every 30s" hx-swap="innerHTML">
+  {% include "panel/_agenda_grid.html" %}
+</div>
+
+{# Panel lateral de detalle #}
+<div x-data="{ abierto: false }" @abrir-cita.window="abierto = true" @keydown.escape.window="abierto = false">
+  <div x-show="abierto" x-cloak x-transition.opacity @click="abierto = false" class="fixed inset-0 z-40 bg-carbon-950/30"></div>
+  <aside x-show="abierto" x-cloak x-transition:enter="transition duration-200" x-transition:enter-start="translate-x-full" x-transition:leave="transition duration-150" x-transition:leave-end="translate-x-full"
+         class="fixed inset-y-0 right-0 z-50 w-full max-w-md overflow-y-auto bg-white shadow-2xl">
+    <button @click="abierto = false" class="absolute right-4 top-4 text-piedra-500" aria-label="Cerrar">✕</button>
+    <div id="drawer" class="p-6"><p class="text-piedra-500">Cargando…</p></div>
+  </aside>
+</div>
+
+{# Modal: nueva cita (recepción) #}
+{% if ROL != "barbero" %}
+<div x-data="{ abierto: false, walkin: false }" @abrir-nueva.window="abierto = true">
+  <div x-show="abierto" x-cloak class="fixed inset-0 z-50 flex items-end justify-center bg-carbon-950/40 p-4 sm:items-center" @click.self="abierto = false">
+    <form method="post" action="{% url 'panel:cita_nueva' %}" class="w-full max-w-lg space-y-3 rounded-2xl bg-white p-6">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <div class="flex items-center justify-between"><h2 class="text-lg font-semibold">Nueva cita</h2>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="walkin" value="1" x-model="walkin" class="rounded text-laton-500"> Sin reserva (ya está en el local)</label></div>
+      <div class="grid grid-cols-2 gap-3">
+        <input name="nombre" placeholder="Nombre del cliente" required class="h-11 rounded-lg border-marfil-100 text-sm">
+        <input name="telefono" placeholder="Celular" inputmode="tel" required class="h-11 rounded-lg border-marfil-100 text-sm">
+        <select name="barbero" required class="h-11 rounded-lg border-marfil-100 text-sm">{% for b in barberos %}<option value="{{ b.id }}">{{ b.nombre }}</option>{% endfor %}</select>
+        <div class="flex gap-2">
+          <input type="date" name="fecha" value="{{ fecha|date:'Y-m-d' }}" class="h-11 w-full rounded-lg border-marfil-100 text-sm">
+          <input type="time" name="hora" step="900" required class="h-11 w-full rounded-lg border-marfil-100 text-sm" :value="walkin ? new Date().toTimeString().slice(0,5) : ''">
+        </div>
+      </div>
+      <fieldset class="max-h-48 space-y-1 overflow-y-auto rounded-lg border border-marfil-100 p-3 text-sm">
+        <legend class="px-1 text-piedra-500">Servicios</legend>
+        {% for s in servicios %}<label class="flex items-center gap-2"><input type="checkbox" name="servicios" value="{{ s.id }}" class="rounded text-laton-500"> {{ s.nombre }} <span class="ml-auto tabular text-piedra-500">{{ s.duracion_min }} min · {{ s.precio|cop }}</span></label>{% endfor %}
+      </fieldset>
+      <div class="flex justify-end gap-2 pt-2">
+        <button type="button" @click="abierto = false" class="h-11 rounded-lg px-4 text-sm">Cancelar</button>
+        <button class="h-11 rounded-lg bg-laton-500 px-6 text-sm font-semibold text-carbon-950">Crear cita</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+{# Modal: bloquear horario #}
+<div x-data="{ abierto: false }" @abrir-bloqueo.window="abierto = true">
+  <div x-show="abierto" x-cloak class="fixed inset-0 z-50 flex items-end justify-center bg-carbon-950/40 p-4 sm:items-center" @click.self="abierto = false">
+    <form method="post" action="{% url 'panel:bloqueo_nuevo' %}" class="w-full max-w-md space-y-3 rounded-2xl bg-white p-6">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <h2 class="text-lg font-semibold">Bloquear horario</h2>
+      {% if ROL != "barbero" %}<select name="barbero" class="h-11 w-full rounded-lg border-marfil-100 text-sm">{% for b in barberos %}<option value="{{ b.id }}">{{ b.nombre }}</option>{% endfor %}</select>{% endif %}
+      <input type="date" name="fecha" value="{{ fecha|date:'Y-m-d' }}" class="h-11 w-full rounded-lg border-marfil-100 text-sm">
+      <div class="flex items-center gap-2 text-sm"><input type="time" name="desde" required class="h-11 flex-1 rounded-lg border-marfil-100"> a <input type="time" name="hasta" required class="h-11 flex-1 rounded-lg border-marfil-100"></div>
+      <input name="motivo" placeholder="Motivo (almuerzo, diligencia…)" class="h-11 w-full rounded-lg border-marfil-100 text-sm">
+      <div class="flex justify-end gap-2"><button type="button" @click="abierto = false" class="h-11 px-4 text-sm">Cancelar</button><button class="h-11 rounded-lg bg-carbon-950 px-6 text-sm font-semibold text-marfil-50">Bloquear</button></div>
+    </form>
+  </div>
+</div>
+{% endblock %}

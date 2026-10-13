@@ -1,0 +1,30 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}Mis citas{% endblock %}
+{% block contenido %}
+<div class="flex items-end justify-between">
+  <h1 class="font-display text-3xl">Mis citas</h1>
+  <a href="{% url 'cliente:salir' %}" class="text-sm text-piedra-400 underline">Salir</a>
+</div>
+
+<h2 class="mt-8 text-sm font-semibold uppercase tracking-wider text-piedra-400">Próximas</h2>
+{% for cita in proximas %}
+<a href="{% url 'cliente:cita_detalle' cita.token %}" class="block hover:opacity-90">{% include "cliente/_tarjeta_cita.html" %}</a>
+{% empty %}
+<div class="mt-4 rounded-card border border-dashed border-carbon-600 p-8 text-center">
+  <p class="text-piedra-400">No tienes citas próximas.</p>
+  <a href="{% url 'cliente:reservar_servicio' %}" class="mt-4 inline-flex h-11 items-center rounded-lg bg-laton-500 px-5 font-semibold text-carbon-950">Reservar</a>
+</div>
+{% endfor %}
+
+{% if pasadas %}
+<h2 class="mt-10 text-sm font-semibold uppercase tracking-wider text-piedra-400">Historial</h2>
+<ul class="mt-4 divide-y divide-carbon-600 rounded-card border border-carbon-600 bg-carbon-800">
+  {% for c in pasadas %}
+  <li class="flex items-center justify-between gap-3 px-4 py-3 text-sm">
+    <div><p class="font-medium">{{ c.nombres_servicios }}</p><p class="text-piedra-400">{{ c.inicio|date:"d/m/Y" }} · {{ c.barbero.nombre }}</p></div>
+    {% include "componentes/_estado.html" with estado=c.estado oscuro=True %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}

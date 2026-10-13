@@ -1,0 +1,26 @@
+{% extends "cliente/base.html" %}
+{% block titulo %}Reservar · Paso {{ paso }} de 4{% endblock %}
+{% block nav_inferior %}{% endblock %}
+{% block main_clase %}mx-auto max-w-5xl px-4 pb-40 pt-4 md:pb-16{% endblock %}
+{% block contenido %}
+<div class="mb-6">
+  <div class="flex items-center justify-between text-sm">
+    {% block volver %}<a href="{% url 'cliente:inicio' %}" class="text-piedra-400 hover:text-marfil-50">← Volver</a>{% endblock %}
+    <span class="text-piedra-400">Paso <span class="font-semibold text-marfil-50">{{ paso }}</span> de 4</span>
+  </div>
+  <div class="mt-3 grid grid-cols-4 gap-1.5" aria-hidden="true">
+    {% for i in "1234" %}<span class="h-1 rounded-full {% if forloop.counter <= paso %}bg-laton-500{% else %}bg-carbon-600{% endif %}"></span>{% endfor %}
+  </div>
+</div>
+<div class="md:grid md:grid-cols-[1fr_320px] md:gap-8">
+  <div>{% block paso %}{% endblock %}</div>
+  <aside class="hidden md:block">
+    <div class="sticky top-24 rounded-card border border-carbon-600 bg-carbon-800 p-5">
+      <p class="text-sm font-semibold uppercase tracking-wider text-piedra-400">Tu reserva</p>
+      {% block resumen_lateral %}
+      {% include "cliente/_resumen.html" %}
+      {% endblock %}
+    </div>
+  </aside>
+</div>
+{% endblock %}

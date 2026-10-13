@@ -1,0 +1,51 @@
+{# Vista de día: una columna por barbero, alto proporcional a la duración #}
+<div class="overflow-x-auto rounded-card border border-marfil-100 bg-white">
+  <div class="grid min-w-[640px]" style="grid-template-columns: 64px repeat({{ columnas|length }}, minmax(180px, 1fr));">
+    {# Cabeceras #}
+    <div class="sticky top-0 z-10 border-b border-marfil-100 bg-white"></div>
+    {% for col in columnas %}
+    <div class="sticky top-0 z-10 flex items-center gap-2 border-b border-l border-marfil-100 bg-white px-3 py-3">
+      {% include "componentes/_avatar.html" with b=col.b size="h-8 w-8 text-xs" %}
+      <div class="min-w-0"><p class="truncate text-sm font-semibold">{{ col.b.nombre }}</p>
+        <p class="text-xs text-piedra-500">{% if col.libre %}Día libre{% else %}{{ col.citas|length }} cita(s){% endif %}</p></div>
+    </div>
+    {% endfor %}
+
+    {# Columna de horas #}
+    <div class="relative" style="height: {{ alto_total }}px">
+      {% for h in horas %}{% if not forloop.first %}<span class="absolute right-2 -translate-y-1/2 text-[11px] tabular text-piedra-500" style="top: {{ h.top }}px">{{ h.label }}</span>{% endif %}{% endfor %}
+    </div>
+
+    {% for col in columnas %}
+    <div class="relative border-l border-marfil-100 {% if col.libre %}tramado{% endif %}" style="height: {{ alto_total }}px">
+      {% for h in horas %}<div class="absolute inset-x-0 border-t border-marfil-100" style="top: {{ h.top }}px"></div>{% endfor %}
+      {% if linea_ahora is not None %}<div class="absolute inset-x-0 z-10 border-t-2 border-poste" style="top: {{ linea_ahora }}px"><span class="absolute -left-1 -top-[5px] h-2 w-2 rounded-full bg-poste"></span></div>{% endif %}
+
+      {% for x, top, alto in col.bloqueos %}
+      <div class="tramado absolute inset-x-1 flex items-start justify-between rounded-md border border-dashed border-piedra-400 px-2 py-1 text-[11px] text-piedra-500" style="top: {{ top }}px; height: {{ alto }}px">
+        <span>{{ x.motivo }} · {{ x.inicio|hora_corta }}–{{ x.fin|hora_corta }}</span>
+        <form method="post" action="{% url 'panel:bloqueo_borrar' x.pk %}">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}"><button title="Quitar bloqueo" class="hover:text-poste">✕</button></form>
+      </div>
+      {% endfor %}
+
+      {% for c, top, alto in col.citas %}
+      <button type="button"
+              hx-get="{% url 'panel:cita_panel' c.pk %}" hx-target="#drawer" @click="$dispatch('abrir-cita')"
+              class="absolute inset-x-1 overflow-hidden rounded-md border border-marfil-100 bg-white pl-3 pr-2 py-1 text-left shadow-sm transition hover:shadow-md
+                     {% if c.estado == 'completada' %}opacity-70{% elif c.estado == 'no_show' %}bg-poste/5{% endif %}"
+              style="top: {{ top }}px; height: {{ alto }}px">
+        <span class="absolute inset-y-0 left-0 w-1
+          {% if c.estado == 'pendiente' %}bg-ambar{% elif c.estado == 'confirmada' %}bg-laton-500{% elif c.estado == 'en_silla' %}bg-salvia pulso{% elif c.estado == 'no_show' %}bg-poste{% else %}bg-piedra-400{% endif %}"></span>
+        <span class="flex items-center gap-1 text-[11px] tabular text-piedra-500">{{ c.inicio|hora_corta }}–{{ c.fin|hora }}
+          {% if c.pagada %}<span class="text-salvia" title="Pagada">$</span>{% endif %}
+          {% if c.origen == 'walkin' %}<span title="Sin reserva">🚶</span>{% endif %}</span>
+        <span class="block truncate text-sm font-semibold {% if c.estado == 'no_show' %}line-through{% endif %}">{{ c.cliente.nombre }}
+          {% if c.cliente.pref_estilo or c.cliente.pref_maquina %}<span class="text-laton-700" title="Tiene preferencias">✎</span>{% endif %}
+          {% if c.cliente.citas.count == 1 %}<span class="ml-1 rounded bg-laton-500/20 px-1 text-[10px] font-semibold text-laton-700">Nuevo</span>{% endif %}</span>
+        {% if alto > 50 %}<span class="block truncate text-xs text-piedra-500">{{ c.nombres_servicios }}</span>{% endif %}
+      </button>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
